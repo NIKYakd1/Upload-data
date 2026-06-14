@@ -1,0 +1,4372 @@
+
+
+
+index(3).html
+فایل
+این فایل برسی کن ببین آیا باگ داره ؟
+
+فایل را بررسی کردم. از نظر ساختار کلی HTML/JS مشکل نحوی (Syntax Error) واضحی پیدا نکردم و فایل به‌درستی بسته شده است، اما چند باگ و ریسک مهم وجود دارد:
+
+1. باگ قطعی در بارگذاری نمونه داده‌ها
+در بخش loadSampleBtn این کد وجود دارد:
+
+currentCountsMap = { .currentCountsMap, .sample };
+این سینتکس جاوااسکریپت معتبر نیست و باید چیزی شبیه این باشد:
+
+currentCountsMap = { ...currentCountsMap, ...sample };
+در غیر این صورت با کلیک روی «نمونه» احتمالاً خطای JavaScript رخ می‌دهد و عملکرد صفحه مختل می‌شود. 
+
+
+2. وابستگی کامل به DataMn.json
+برنامه در شروع حتماً فایل DataMn.json را می‌خواند:
+
+const response = await fetch('DataMn.json');
+اگر این فایل در همان پوشه نباشد یا سرور اجازه دسترسی ندهد، کل برنامه متوقف می‌شود. 
+
+
+3. احتمال مشکل هنگام اجرای مستقیم فایل
+چون از fetch() استفاده شده، اگر فایل را با دوبار کلیک و پروتکل file:// باز کنید، بسیاری از مرورگرها اجازه خواندن JSON را نمی‌دهند و برنامه اجرا نمی‌شود. باید روی وب‌سرور اجرا شود. 
+
+
+4. ریسک خرابی داده در ویرایش سلول‌ها
+در تابع ذخیره ویرایش:
+
+const item = currentMenuData.find(m => m.serviceNameId === sid);
+اگر در داده‌های JSON بعضی رکوردها serviceNameId نداشته باشند، ویرایش، حذف و برخی عملیات دیگر درست کار نخواهند کرد. 
+
+
+5. استفاده زیاد از localStorage
+تمام داده‌ها، ستون‌ها، تنظیمات و بایگانی‌ها در LocalStorage ذخیره می‌شوند:
+
+saveToLS('menuData', currentMenuData);
+saveToLS('countsMap', currentCountsMap);
+اگر حجم داده زیاد شود (معمولاً بالای 5 تا 10 مگابایت)، ذخیره‌سازی شکست می‌خورد و بخشی از اطلاعات از دست می‌رود. 
+
+
+6. احتمال خطای XSS در حالت ویرایش
+سلول‌ها با contenteditable="true" و سپس با innerHTML مجدداً رندر می‌شوند. اگر کاربر کد HTML وارد کند، ممکن است در بعضی سناریوها به تزریق HTML منجر شود.
+
+نتیجه
+یک باگ قطعی پیدا شد (استفاده از .currentCountsMap و .sample به جای ...currentCountsMap و ...sample). همچنین چند ریسک اجرایی و طراحی وجود دارد که بهتر است اصلاح شوند.
+
+اگر بخواهی، می‌توانم کل فایل را به‌صورت تخصصی‌تر بررسی کنم و یک گزارش کامل شامل تمام خطاهای JavaScript، مشکلات امنیتی، مشکلات عملکرد (Performance) و ناسازگاری مرورگرها تهیه کنم.
+
+
+
+login(1).html
+فایل
+خب من پنل ورود رو نوشتم !
+
+
+dashboard.html
+فایل
+
+USERDATA.json
+فایل
+خب 
+این ورود رو هم نوشت شده 
+حالا بریم مزحله ی بعدی 
+ساخت داشبورد 
+منوص اصلی !
+ببین من فعلا دارم کد هارو روی سیستم خودم در فولدر در ویندوز اجرا میکنم برای مشاهده و تست هم دارم از python -m http.server 8000  استفاده میکنم 
+حالا  نیاز به پنل منوی اصلی دارم چه خصوصتی باید داشته باش  
+
+
+flight-menu.html
+فایل
+این کد رو برام نوشت ai deepseek
+برسی کن 
+
+
+متن چسبانده‌شده.txt
+سند
+این کد حالا ببین برسی کن 
+در خصوص سیستم ادمین و دسترسی ها مثلا دسترسی به بقیه ماژول ها یه شرکت میاد میگه من مثلا ۱۰ ماژول شمارو میخوام انبار داری و منو پروازی و ... من هم میام به این کاربر ۱۰ ایتن باز میکنم و میدم ! و مشخص میکینم که اون کاربر چند یوزر میتونه ایحاد بکنه ْ یه یوزر و پورد مشخص به ایشون میدم و اون شخص وارد پنل ادمین اون قسمت خودش میشه ! میخوام بعدتر یه پنل ادمین جدید اضافه کنم که کاربران یا شرکت ها بتونن سیستم خودشون رو مدریت کنند مثلا ما ده ایتم و ماژول برای شرکت ایکس باز کردیم و شرکت ایکس الان داخل پنل خودش ۱۰ ایتم داره و اجازه داره ده یوزر بسازه مجوز تعدا ساخت یوزر های اون هم از سمت ما داده میشه !که داخل فایل datauser ذخیره میشه ! حالا یه بحث مهمتر از همه هم داریم وقتی ما داریم به یه ادمین یوزر میدیم زمان هم براش مشخص میکنیم که از روز مشخص شده تا روز مشخص شده این یوزر میتونه فعال باشه و بعد که تاریخش تموم شد ! از داخل پنل مدریت خودمون اون یوزر تمام بشه فرصتش تاریخ و ساعت باید داشته باشه این اعتبار ممکنه ما ساعتی به شخص بدیم برای انتخاب این موضوع هم میشه چک باکس بذرایم تاریخ و ساعت هرکدوم انتخاب شد همون مقدار زمان بذارنه ! حالا اینو برسی کن ایا به این کد این موضوع اضافه شد یا نه ؟
+
+
+متن چسبانده‌شده(1).txt
+سند
+حالا این فایل login.html رو بزن 
+برسی کن
+من  باگ های قبلی روی این رفع شده یانه 
+server python روی این ها اعمال شده ایا اصلا نیاز هست بشه یا نه !
+
+
+متن چسبانده‌شده(2).txt
+سند
+نه نه ما قرار شد فایل login بروز کنیم ! پرامپت دقیق برای  فایل login بنویس
+
+برلای همین فایل هم دستور پرامپت دقیق بنویس تا بدم کد رو بروز کنه و همهی باگ هارو بگیره درضمن میخوام فایل دیتای جدید باید  ساپورت کنه اخرین datauser که پیشنهاد دادی یه usersata مناسب با اطلاعات کامل admin.html رو هماهنگ باشه با فایل admin.html
+
+کد دقیق login رو بروز باید بکینم پس براش پرامپت دقیق بنویس
+
+ تغیرا به هیچی نده کلید ها ستون ها و .... یه پرامپت دقیق برام بنویس و بسیار بسیار بسیار مهم خیلی مهمه همه ی اطلاعات کامل حفظ بشه همه ی جزعیات کامل کد حفظ بشه ! در ضمن باید کد رو کامل
+ بنویسه و یه HTML کامل بنویسه پرامپت به هوش مصنوعی بدم و ممکنه کد منو کامل HTML تغیر نده وفقط اومد یه فایل CSS جداگانه طراحی کنه مجدد پرامپت بنویس و تاکید کن بدون تیغر در کد اصلی کل کد HTML رو طبق دستور وفط ظاهر و شکل و استایل برنماه رو تغیر بده و بقیه جزعیات حفظ بشه این موضوع حفظ قابلیتا و گزینه های قبلی بسیار مهمه تاکید کن کل فایل HTML بنویسه !!!!!!!! یه پرامپت دقیق بنویس
+
+
+server.py
+Python
+فایل from http.server import BaseHTTPRequestHandler, HTTPServer
+import json
+
+HOST = "localhost"
+PORT = 9000
+
+class ApiHandler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+
+        if self.path == "/users":
+
+            with open(
+                "USERDATA.json",
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                data = json.load(f)
+
+            self.send_response(200)
+            self.send_header(
+                "Content-type",
+                "application/json"
+            )
+            self.end_headers()
+
+            self.wfile.write(
+                json.dumps(data).encode("utf-8")
+            )
+
+            return
+
+        if self.path == "/menu":
+
+            with open(
+                "DataMn.json",
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                data = json.load(f)
+
+            self.send_response(200)
+            self.send_header(
+                "Content-type",
+                "application/json"
+            )
+            self.end_headers()
+
+            self.wfile.write(
+                json.dumps(data).encode("utf-8")
+            )
+
+            return
+
+server = HTTPServer(
+    (HOST, PORT),
+    ApiHandler
+)
+
+print(
+    f"API Running: http://{HOST}:{PORT}"
+)
+
+server.serve_forever()
+
+ببیین اینو !
+ایا این بروزرسانی نیاز داره ؟؟
+
+
+server(2).py
+Python
+برسی کن 
+
+
+server(3).py
+Python
+
+admin(2).html
+فایل
+برسی کن ببین این دو فایل الان با هم هماهنگ هستن یا نه ؟؟
+ببین ساده بگو من بیسوادم میخوام راحت بفهمم 
+
+
+server(4).py
+Python
+برسی کن
+
+
+admin(3).html
+فایل
+کد admin.html :  
+
+
+بالا هم گفتی http://localhost:9000/users بزن 
+زدم 
+ اینو باز کرد 
+This site can’t be reached
+localhost refused to connect.
+Try:
+
+Checking the connection
+Checking the proxy and the firewall
+ERR_CONNECTION_REFUSED برسی کن 
+
+خب از همون اول میگفتی هر دو فایل پاورشل باید باهم باز باشه من فقط دستور python server.py میزنم داخل یه پاورشل  و دستور python -m http.server 5500 نمیزدم 
+الان دوتا باز کرد م و الان این عکس و یوزر ها هم برای من همه لود شد!!
+
+
+متن چسبانده‌شده(3).txt
+سند
+کد برام نوشت اما خیلی متفاوته !
+این کد رو ببین نباید گزینه ی منوی پروازی توش باشه این منو مروبط به ماژول ها و ایتم  ها باید سوپر ادمین بهشون دسترسی بده تا در دسترس اینا قرار بگیره 
+
+و ما باید یه قسمت باید به ادمین شرکت بدیم تا بتونه طبق دیتابیس کاربر های خودش ماژول هایی که بهش ون داده شده 
+اطلاعات دریافت کنه و برنامه و ماژول ها براش باز بشه!
+
+حالت دارک مود و لایتمود هم میخوام نوشته یشه !
+پس پرامپت دقیق بنیوس توش 
+
+
+
+پرامپت انگلیسی باشه 
+
+داخل پرامپت مکان برای جایگذاری کد فعلی باشه
+
+
+
+تغیرا به هیچی نده کلید ها ستون ها و استایل و . .... یه پرامپت دقیق برام بنویس و بسیار بسیار بسیار مهم
+
+ خیلی مهمه همه 
+
+ اطلاعات کامل حفظ بشه همه ی جزعیات کامل کد حفظ بشه ! در ضمن باید کد رو کامل بنویسه و یه HTML کامل بنویسه پرامپت به هوش مصنوعی بدم و ممکنه کد منو کامل HTML تغیر نده وفقط اومد یه فایل CSS جداگانه طراحی کنه مجدد پرامپت بنویس و تاکید کن بدون تیغر در کد اصلی کل کد HTML رو طبق دستور وفط ظاهر و شکل و استایل برنماه رو تغیر بده و بقیه جزعیات حفظ بشه این موضوع حفظ قابلیتا و گزینه های قبلی بسیار مهمه  تاکید کن کل فایل HTML بنویسه !!!!!!!! یه پرامپت دقیق بنویس
+
+
+متن چسبانده‌شده(4).txt
+سند
+این پنل ادمین شرکت هست !
+فقط ببین چی نوشته !
+فقط جهت دیدن و اشنا شدنت فرستادم 
+
+
+متن چسبانده‌شده(5).txt
+سند
+
+میخوام تغیرلت مهمی به برنامه منو ی پروازی بدیم فایل flight-menu.html
+
+۱ سیستم خروجی به اکسل به شدت ضعیف عمل میکنه خیلی خیلی انگار دیر فایل رو میسازع خیلی دقیق برسی کن ببینه مشکل چیه میخوام خیلی زود خروجی اسکل بده و سریع خروجی اکشل بده و رفع اشکال بکنه !
+۲ استایل برنامه حالت انگار یه حباب هست که داخلش برنامه هست میخوام برنامهکامل فول اسکرین باشه و همه ی قسمت های صفحه باشه !
+و این ایتم هایی که میگم باید حذف بشه !
+📋
+۱۰۱
+ردیف
+✅
+دقیقا این قسمت ها اضافی هست این دو قسمت!
+حالا یه پرامپت به شدت سختگیرانه برای دیپ سیک بنویس !تا این تغیرات رو به کد بده 
+
+
+پرامپت انگلیسی باشه 
+
+داخل پرامپت مکان برای جایگذاری کد فعلی باشه
+
+
+
+تغیرا به هیچی نده کلید ها ستون ها و استایل و . .... یه پرامپت دقیق برام بنویس و بسیار بسیار بسیار مهم
+
+ خیلی مهمه همه 
+
+ اطلاعات کامل حفظ بشه همه ی جزعیات کامل کد حفظ بشه ! در ضمن باید کد رو کامل بنویسه و یه HTML کامل بنویسه پرامپت به هوش مصنوعی بدم و ممکنه کد منو کامل HTML تغیر نده وفقط اومد یه فایل CSS جداگانه طراحی کنه مجدد پرامپت بنویس و تاکید کن بدون تیغر در کد اصلی کل کد HTML رو طبق دستور وفط ظاهر و شکل و استایل برنماه رو تغیر بده و بقیه جزعیات حفظ بشه این موضوع حفظ قابلیتا و گزینه های قبلی بسیار مهمه  تاکید کن کل فایل HTML بنویسه !!!!!!!! یه پرامپت دقیق بنویس
+
+
+متن چسبانده‌شده(7).txt
+سند
+این کد که نوشت مشکل داره !
+ از نظر ساختار رنگ 
+رنگ بندی خوبه همه چیش !  اما یه مشکل بدی هست  توی سیستم جدولش رنگ پس زمینه بسیار روشنه برنامه خیلی روشنه میخوام نوار های جدول یه رینگ روشن یه رنگ مکی تیره تر باشه !
+و  فونت و متن  اونا درشت باشه پر رنگ باشه و مثلا بولد باشه ْ
+کد رو  میفرستم برسی کن !
+  برسی کن 
+ و درنهایت پرامپت دقیق بنویس برای تصیح این مورد !
+
+کامل بروز کن 
+
+
+پرامپت انگلیسی باشه 
+
+داخل پرامپت مکان برای جایگذاری کد فعلی باشه
+
+
+
+تغیرا به هیچی نده کلید ها ستون ها و استایل و . .... یه پرامپت دقیق برام بنویس و بسیار بسیار بسیار مهم
+
+ خیلی مهمه همه 
+
+ اطلاعات کامل حفظ بشه همه ی جزعیات کامل کد حفظ بشه ! در ضمن باید کد رو کامل بنویسه و یه HTML کامل بنویسه پرامپت به هوش مصنوعی بدم و ممکنه کد منو کامل HTML تغیر نده وفقط اومد یه فایل CSS جداگانه طراحی کنه مجدد پرامپت بنویس و تاکید کن بدون تیغر در کد اصلی کل کد HTML رو طبق دستور وفط ظاهر و شکل و استایل برنماه رو تغیر بده و بقیه جزعیات حفظ بشه این موضوع حفظ قابلیتا و گزینه های قبلی بسیار مهمه  تاکید کن کل فایل HTML بنویسه !!!!!!!! یه پرامپت دقیق بنویس
+
+
+
+
+متن چسبانده‌شده(8).txt
+سند
+این کد رو ببینید !
+این کد عالیه  بیا در خصوص این کد صحبت بکنیم 
+اسمش میشه کد ۷ 
+این کد هفت ببین همه چیش عالیه فقط دو تغیر میخواد سایز متن در جدول 
+و ه
+در بالا و رنگش هم دقیقا میخوام استایل همون حالت اینستاگرامی باشه !
+و در داخل  کد فعلا میخوام به فارسی همه چیز جداشده باشه قسمت هدر بنویسه هدر و قسمت رنگ هدر بنویسه رنگ هدر قسمت متن روی قدر بنویسه متن روی هدر و قسمت  رنگ فونت متن هدر هم بنویسه رنگ فونت متن هدر یعنی میخوام با جزعیات دقیق همه ی قسمت های کد نوشته شده باشه برای ویرایش بهتر و دقیقتر تا گاهی بتونم کد رو تغیرات بدم خودم !
+برای همه ی قسمت های کد میخوام اینطوری نوشته بشه  کامل همه هم به زبان فارسی 
+
+
+پرامپت انگلیسی باشه 
+
+داخل پرامپت مکان برای جایگذاری کد فعلی باشه
+
+
+
+تغیرا به هیچی نده کلید ها ستون ها و و . .... یه پرامپت دقیق برام بنویس و بسیار بسیار بسیار مهم
+
+ خیلی مهمه همه 
+
+ اطلاعات کامل حفظ بشه همه ی جزعیات کامل کد حفظ بشه ! در ضمن باید کد رو کامل بنویسه و یه HTML کامل بنویسه پرامپت به هوش مصنوعی بدم و ممکنه کد منو کامل HTML تغیر نده وفقط اومد یه فایل CSS جداگانه طراحی کنه مجدد پرامپت بنویس و تاکید کن بدون تیغر در کد اصلی کل کد HTML رو طبق دستور وفط ظاهر و شکل و چیدمان برنامه رو تغیر بده و بقیه جزعیات حفظ بشه این موضوع حفظ قابلیتا و گزینه های قبلی بسیار مهمه  تاکید کن کل فایل HTML بنویسه !!!!!!!! یه پرامپت دقیق بنویس
+
+
+flight-menu14(1).html
+فایل
+ببین این کد میخوام دوباره بهش هر ایتمی که تا الان نوشتیم رو اضافه کنیم 
+چون فایل های جدید که نوشتم حذفش شده 
+ببین چه قابلیت هایی توی این نیست  که در نسخه های جدید قرار شد بنویسیم و اضافه کنیم !! کامل برسی کن در ضمن باگ های اونو هم دقیق برسی کن ! 
+
+
+متن چسبانده‌شده(9).txt
+سند
+یه بحث دیگه این فایل جدید که نوشته شد وابسته به API نیست انگار 
+ما قرار بود هرکاری میکنیم در لظحه ذخیره بشه در دیتابیس های برنامه ! نه در کش مرورگر !
+الان داخل برنامه وفتی خروج و ذخیره میزنم و از من میپرسه ذخیره بشه باید بره روی دیتا بیس DataMn ذخیره نمیشه مستقیم 
+و وقتی گزینه ذخیره تغیرات میزنم قایل دیتابیس برای من میفرسته و دانلود میشه باید مستقیم روی فایل datamn.json ذخیره بشه !
+ 
+در ضمن ما قرار بر این شد برنامه حالتی بنویسیم هر کاربر که بعد وارد برنامه میشه  دیتا بیس خودش رو داشته باشه !البته فعلا روی این موضوع کار نمیکنیم !
+
+ولی مشکل اینه باید حل بشه !
+
+
+server(5).py
+Python
+
+متن چسبانده‌شده(10).txt
+سند
+هنوز کد مشکل ذخیره سازی داره !
+هر تغیر میدم چه گزینه ی خروج و ذخیره و چه گزینه ثبت تغیرات میزنم  مینویسه ذخیره شد ولی ذخیره نمیشه !
+و یه بحث دیگه که هست  زمانی حالت ویرایش  میریم داخل کد  و هر تغیر میدم  مینویسه ذخیره سازی روی سرور ناموفق بود ! فایل SERVER.PY هم فرستادم یرسی کنی ببینی مشکل  از ک
+
+
+متن چسبانده‌شده(11).txt
+سند
+خب این کد flight-menu.html هست 
+و کامل برسی کن api اونو برسی کن اگه مشکل داره پرانپت دقیق بنویس که فقط فقط مشکل api کد رو حل کنه همین!
+در ضمن یادت نره سختگیر باش که بقیه اجزای کد  بجز جایی که مشکل داره تغیر نده نهوش مصنوعی بنویس پرامپت رو 
+
+این خطا تقریباً با قطعیت از API نیست، بلکه از عدم تطابق شناسه (ID) بین flight-menu.html و server.py است.
+
+پیام خطا:
+
+{
+  "ok": false,
+  "message": "آیتم منو پیدا نشد"
+}
+یعنی درخواست PUT به سرور رسیده، اما این قسمت از server.py نتوانسته رکورد را پیدا کند:
+
+for i, item in enumerate(items):
+    item_id = item.get("serviceNameId", item.get("id"))
+    if str(item_id) == menu_item_id:
+        idx = i
+        break
+
+if idx is None:
+    self._error(404, "آیتم منو پیدا نشد.")
+یعنی مقدار menu_item_id که از HTML ارسال شده با مقدار موجود در DataMn.json یکی نیست.
+
+پرامپت دقیق برای هوش مصنوعی
+TASK: Fix ONLY the Menu Item Update API Bug in flight-menu.html.
+
+IMPORTANT RULES:
+
+DO NOT modify any UI.
+
+DO NOT modify any CSS.
+
+DO NOT modify any buttons.
+
+DO NOT modify any table columns.
+
+DO NOT modify any filters.
+
+DO NOT modify any save dialogs.
+
+DO NOT modify any existing functionality.
+
+DO NOT remove any code.
+
+DO NOT rename any variables unless absolutely required for this bug.
+
+Preserve 100% of all current features and behavior.
+
+Output the COMPLETE UPDATED HTML FILE.
+
+Do NOT output patches.
+
+Do NOT output partial code.
+
+Do NOT create external CSS files.
+
+Do NOT create external JS files.
+
+Return a FULL standalone HTML document.
+
+PASTE THE ENTIRE CURRENT flight-menu.html HERE
+
+When editing an existing menu row and pressing Save, the application shows:
+
+"Server save failed"
+or
+
+{"ok","message":"آیتم منو پیدا نشد"}
+
+The backend API is already working and receives the request.
+
+The issue is that flight-menu.html is sending an incorrect item identifier when performing PUT requests.
+
+The server.py update endpoint expects:
+
+PUT /menu/{serviceNameId}
+
+and searches records using:
+
+item.get("serviceNameId", item.get("id"))
+
+Therefore:
+
+Every loaded row must permanently preserve its original unique identifier.
+
+When menu data is loaded from API:
+
+Preserve:
+
+serviceNameId
+
+id
+
+Never overwrite them.
+
+Never regenerate them.
+
+When user edits a row:
+
+Save the original identifier inside the row object.
+
+Keep it hidden if needed.
+
+Never change it.
+
+When updating:
+
+Current buggy behavior:
+
+PUT /menu/undefined
+or
+
+PUT /menu/null
+or
+
+PUT /menu/rowIndex
+
+or
+
+PUT /menu/generatedValue
+
+must NEVER happen.
+
+Correct behavior:
+
+PUT /menu/{original serviceNameId}
+
+Example:
+
+PUT /menu/menu_1749655521
+
+Before sending PUT request:
+
+Determine identifier using:
+
+const itemId =
+row.serviceNameId ||
+row.id;
+
+If no identifier exists:
+
+Show error:
+
+"Menu item identifier is missing"
+
+and DO NOT send request.
+
+Add detailed debugging logs:
+
+console.log("Updating item:", row);
+console.log("serviceNameId:", row.serviceNameId);
+console.log("id:", row.id);
+console.log("PUT URL:", apiUrl);
+
+When loading data from API:
+
+Verify every record contains:
+
+serviceNameId
+
+If missing:
+
+Automatically set:
+
+item.serviceNameId = item.id;
+
+ONLY IN MEMORY.
+
+Do NOT alter existing database structure.
+
+Ensure all edit operations use:
+
+originalRow.serviceNameId
+
+instead of:
+
+table index
+row number
+array index
+temporary identifier
+
+Preserve compatibility with current DataMn.json structure.
+
+Preserve compatibility with current server.py structure.
+
+After the fix:
+
+Edit row.
+
+Click Save Changes.
+
+PUT request uses original serviceNameId.
+
+Server finds the record.
+
+DataMn.json updates successfully.
+
+No more:
+
+"آیتم منو پیدا نشد"
+
+"Server save failed"
+
+PUT /menu/undefined
+
+PUT /menu/null
+
+Return the COMPLETE UPDATED HTML FILE with ONLY this API identifier bug fixed and NOTHING ELSE changed.
+
+قبل از هر چیز، من تقریباً مطمئنم اگر در DevTools → Network نگاه کنی، URL درخواست PUT چیزی شبیه این است:
+
+http://localhost:9000/menu/undefined
+یا:
+
+http://localhost:9000/menu/null
+یا:
+
+http://localhost:9000/menu/12
+در حالی که داخل DataMn.json شناسه واقعی احتمالاً چیزی شبیه:
+
+{
+  "serviceNameId": "menu_1749655521"
+}
+است. اگر کد flight-menu.html را هم بفرستی، می‌توانم دقیقاً خط خراب را پیدا کنم و بگویم کدام تابع ذخیره‌سازی باید اصلاح شود.
+
+
+{
+  "ok": false,
+  "message": "آیتم منو پیدا نشد."
+} 
+
+با ۳۳۱۵ خط اصلاً لازم نیست کل فایل را بفرستی.
+
+برای پیدا کردن این باگ فقط حدود ۱۵۰ تا ۳۰۰ خط کافی است.
+
+این بخش‌ها را جداگانه بفرست:
+
+بخش ۱ (مهم‌ترین)
+تابع بارگذاری داده‌ها:
+
+loadMenuData
+یا
+
+loadData
+یا هر تابعی که:
+
+fetch('http://localhost:9000/menu')
+دارد.
+
+حدود ۵۰ خط قبل و بعدش را بفرست.
+
+بخش ۲
+تابع ویرایش آیتم:
+
+editItem
+یا
+
+openEditModal
+یا
+
+startEdit
+یا هر چیزی که رکورد را وارد حالت ویرایش می‌کند.
+
+حدود ۱۰۰ خط.
+
+بخش ۳ (خیلی مهم)
+تابع ذخیره:
+
+دنبال این‌ها بگرد:
+
+fetch(... , {
+    method: 'PUT'
+})
+یا
+
+saveChanges()
+یا
+
+updateItem()
+یا
+
+saveCurrentItem()
+همان قسمت را کامل بفرست.
+
+بخش ۴
+در DataMn.json فقط یک رکورد نمونه بفرست.
+
+مثلاً:
+
+{
+  ...
+}
+فقط یک آیتم از menuData کافی است.
+
+بخش ۵
+از DevTools مرورگر:
+
+F12
+
+تب:
+
+Network
+بعد روی ذخیره کلیک کن.
+
+روی درخواست قرمز رنگ:
+
+PUT /menu/...
+کلیک کن.
+
+این ۳ مورد را بفرست:
+
+Request URL
+Request Payload
+Response
+اگر بخواهی سریع‌تر پیدا کنیم
+در فایل HTML جستجو کن:
+
+method: 'PUT'
+اگر فقط همان بخش را بفرستی (معمولاً ۲۰ تا ۵۰ خط)، در ۹۵٪ مواقع علت دقیق خطا مشخص می‌شود.
+
+چون با توجه به کد server.py، خطا فقط زمانی برمی‌گردد که:
+
+str(item.get("serviceNameId", item.get("id")))
+با چیزی که HTML در آدرس زیر می‌فرستد برابر نباشد:
+
+PUT /menu/<ID>
+و برای پیدا کردن اینکه دقیقاً چه ID اشتباهی ارسال می‌شود، فقط بخش PUT لازم است، نه کل ۳۳۱۵ خط.
+
+
+اینو برسی کن  کد رو قسمتی میفرستم 
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>گزارش کل منوی پروازی | سامانه کترینگ هوایی</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/jalaali-js@1.2.6/dist/jalaali.min.js">
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/css/persian-datepicker.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js">
+    </script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
+    </script>
+
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-light: #38BDF8;
+            --accent: #8B5CF6;
+            --teal: #14B8A6;
+            --danger: #EF4444;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --radius: 0px;
+            --transition: 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --toolbar-height: 68px;
+            --resize-handle-width: 7px;
+            --blur-sm: 12px;
+            --blur-md: 24px;
+            --blur-lg: 36px;
+            --font-family: 'SF Pro Display', 'SF Pro Text', system-ui, 'Segoe UI', 'Vazirmatn', 'Shabnam', 'IRANSans', Tahoma, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: var(--font-family);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+            transition: background var(--transition), color var(--transition);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            cursor: default;
+            position: relative;
+            z-index: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-family: var(--font-family);
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.theme-light {
+            --bg: #F1F5F9;
+            --surface: #FFFFFF;
+            --surface-elevated: #FFFFFF;
+            --border: #E2E8F0;
+            --border-strong: #CBD5E1;
+            --text-primary: #0F172A;
+            --text-secondary: #334155;
+            --text-muted: #64748B;
+            --text-heading: #0F172A;
+            --glass-weak: rgba(255,255,255,0.65);
+            --glass-medium: rgba(255,255,255,0.82);
+            --glass-strong: rgba(255,255,255,0.94);
+            --glass-border: rgba(203,213,225,0.55);
+            --glass-border-strong: rgba(148,163,184,0.75);
+            --hover-row: rgba(37,99,235,0.06);
+            --even-row: rgba(241,245,249,0.7);
+            --highlight-cell: rgba(37,99,235,0.10);
+            --edit-mode-bg: rgba(245,158,11,0.06);
+            --edit-mode-border: rgba(245,158,11,0.45);
+            --accent-glow: rgba(37,99,235,0.18);
+            --shadow: 0 20px 45px -10px rgba(0,0,0,0.08);
+            --bg-app-container: #F8FAFC;
+            --header-bg: linear-gradient(135deg, #2563EB 0%, #38BDF8 35%, #14B8A6 70%, #8B5CF6 100%);
+            --toolbar-bg: rgba(255,255,255,0.88);
+            --table-bg: rgba(255,255,255,0.55);
+            --footer-bg: #F1F5F9;
+            --btn-bg: #F1F5F9;
+            --btn-hover-bg: #E2E8F0;
+            --btn-text: #0F172A;
+            --btn-border: #CBD5E1;
+            --input-bg: #FFFFFF;
+            --input-border: #CBD5E1;
+            --input-text: #0F172A;
+            --modal-bg: #FFFFFF;
+            --modal-text: #0F172A;
+            --toast-bg: #FFFFFF;
+            --toast-text: #0F172A;
+            --scrollbar-track: #F1F5F9;
+            --scrollbar-thumb: #CBD5E1;
+            --scrollbar-thumb-hover: #94A3B8;
+            --edit-cell-bg: rgba(245,158,11,0.08);
+            --edit-cell-focus-bg: rgba(245,158,11,0.16);
+            --sidebar-bg: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 50%, #ECFDF5 100%);
+            --sidebar-border: #E2E8F0;
+            --sidebar-module-hover: rgba(37,99,235,0.07);
+            --sidebar-module-active: rgba(37,99,235,0.13);
+            --dropdown-bg: #FFFFFF;
+            --dropdown-border: #E2E8F0;
+            --dropdown-shadow: 0 14px 45px rgba(0,0,0,0.10);
+            --filter-panel-bg: #F8FAFC;
+            --filter-input-bg: #FFFFFF;
+            --badge-row-bg: rgba(37,99,235,0.10);
+            --badge-row-text: #2563EB;
+            --badge-ready-bg: rgba(16,185,129,0.10);
+            --badge-ready-text: #059669;
+            background: var(--bg);
+            color: var(--text-primary);
+        }
+
+        body.theme-dark {
+            --bg: #0A0F1E;
+            --surface: #0F172A;
+            --surface-elevated: #1E293B;
+            --border: rgba(255,255,255,0.10);
+            --border-strong: rgba(255,255,255,0.20);
+            --text-primary: #F1F5F9;
+            --text-secondary: #E2E8F0;
+            --text-muted: #CBD5E1;
+            --text-heading: #FFFFFF;
+            --glass-weak: rgba(15,23,42,0.55);
+            --glass-medium: rgba(15,23,42,0.72);
+            --glass-strong: rgba(15,23,42,0.88);
+            --glass-border: rgba(255,255,255,0.14);
+            --glass-border-strong: rgba(255,255,255,0.22);
+            --hover-row: rgba(56,189,248,0.09);
+            --even-row: rgba(255,255,255,0.025);
+            --highlight-cell: rgba(56,189,248,0.16);
+            --edit-mode-bg: rgba(245,158,11,0.10);
+            --edit-mode-border: rgba(245,158,11,0.50);
+            --accent-glow: rgba(56,189,248,0.28);
+            --shadow: 0 22px 55px -12px rgba(0,0,0,0.55);
+            --bg-app-container: #0A0F1E;
+            --header-bg: linear-gradient(135deg, #0F172A 0%, #1E3A8A 30%, #6D28D9 65%, #0F766E 100%);
+            --toolbar-bg: rgba(15,23,42,0.82);
+            --table-bg: rgba(10,15,30,0.40);
+            --footer-bg: rgba(15,23,42,0.55);
+            --btn-bg: rgba(255,255,255,0.08);
+            --btn-hover-bg: rgba(255,255,255,0.14);
+            --btn-text: #FFFFFF;
+            --btn-border: rgba(255,255,255,0.18);
+            --input-bg: rgba(255,255,255,0.07);
+            --input-border: rgba(255,255,255,0.18);
+            --input-text: #F1F5F9;
+            --modal-bg: rgba(15,23,42,0.92);
+            --modal-text: #E2E8F0;
+            --toast-bg: rgba(15,23,42,0.92);
+            --toast-text: #F1F5F9;
+            --scrollbar-track: rgba(255,255,255,0.025);
+            --scrollbar-thumb: rgba(255,255,255,0.18);
+            --scrollbar-thumb-hover: rgba(255,255,255,0.32);
+            --edit-cell-bg: rgba(245,158,11,0.08);
+            --edit-cell-focus-bg: rgba(245,158,11,0.16);
+            --sidebar-bg: linear-gradient(180deg, #0F172A 0%, #1E293B 40%, #0F172A 100%);
+            --sidebar-border: rgba(255,255,255,0.10);
+            --sidebar-module-hover: rgba(56,189,248,0.08);
+            --sidebar-module-active: rgba(139,92,246,0.20);
+            --dropdown-bg: #1E293B;
+            --dropdown-border: rgba(255,255,255,0.14);
+            --dropdown-shadow: 0 14px 45px rgba(0,0,0,0.55);
+            --filter-panel-bg: rgba(15,23,42,0.55);
+            --filter-input-bg: rgba(255,255,255,0.07);
+            --badge-row-bg: rgba(56,189,248,0.18);
+            --badge-row-text: #38BDF8;
+            --badge-ready-bg: rgba(20,184,166,0.15);
+            --badge-ready-text: #14B8A6;
+            background: #0A0F1E;
+            color: var(--text-primary);
+        }
+
+        .app-container {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            background: var(--bg-app-container);
+            backdrop-filter: blur(var(--blur-lg));
+            -webkit-backdrop-filter: blur(var(--blur-lg));
+            border-radius: 0;
+            box-shadow: none;
+            overflow: hidden;
+            transition: all var(--transition);
+            border: none;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: var(--header-bg);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            color: #FFFFFF;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            flex-shrink: 0;
+            min-height: 56px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 280px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            white-space: nowrap;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+
+        .header .sub {
+            font-size: 0.85rem;
+            opacity: 0.92;
+            color: rgba(255,255,255,0.90);
+            width: 100%;
+            margin-top: 2px;
+        }
+
+        .user-info-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 10px 24px;
+            background: var(--glass-strong);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            transition: background var(--transition);
+            flex-shrink: 0;
+        }
+
+        .user-info-bar .user-details {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .user-info-bar .user-details span {
+            white-space: nowrap;
+        }
+
+        .btn-dashboard {
+            margin-right: auto;
+        }
+
+        .toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--toolbar-bg);
+            backdrop-filter: blur(var(--blur-md));
+            -webkit-backdrop-filter: blur(var(--blur-md));
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0.6rem 1.25rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            min-height: var(--toolbar-height);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: background var(--transition), border-color var(--transition);
+            flex-shrink: 0;
+        }
+
+        .edit-mode-active .toolbar {
+            border-bottom: 2px solid var(--edit-mode-border);
+            background: rgba(254,243,199,0.55);
+        }
+
+        .toolbar-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .toolbar-group--left {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .toolbar-group--center {
+            flex: 2;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .toolbar-group--right {
+            flex: 1;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        .dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.78rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            font-family: inherit;
+            outline: none;
+            position: relative;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: var(--btn-bg);
+            letter-spacing: 0.01em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+
+        .dropdown-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+            border-color: var(--border-strong);
+            background: var(--btn-hover-bg);
+        }
+
+        .dropdown-toggle .dropdown-arrow {
+            font-size: 0.65rem;
+            transition: transform 0.3s ease;
+            display: inline-block;
+        }
+
+        .dropdown-wrapper.open .dropdown-toggle .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            z-index: 250;
+            background: var(--dropdown-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--dropdown-border);
+            border-radius: 18px;
+            padding: 10px 8px;
+            display: none;
+            min-width: 220px;
+            box-shadow: var(--dropdown-shadow);
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .dropdown-menu.open {
+            display: flex;
+        }
+
+        .dropdown-menu button {
+            display: flex;
+            width: 100%;
+            text-align: right;
+            margin: 0;
+            justify-content: flex-start;
+            border-radius: 12px;
+            padding: 9px 14px;
+            font-size: 0.76rem;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .dropdown-menu button:hover {
+            background: var(--sidebar-module-hover);
+            border-color: var(--border);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .dropdown-menu .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 4px 6px;
+            opacity: 0.5;
+        }
+
+        .dropdown-menu .dropdown-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 4px 14px 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .btn-filter-toggle {
+            position: relative;
+        }
+
+        .btn-filter-toggle .filter-funnel-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            position: relative;
+            margin-left: 4px;
+        }
+
+        .btn-filter-toggle .filter-funnel-icon::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-bottom: 8px solid var(--btn-text);
+        }
+
+        .btn-filter-toggle .filter-funnel-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 2px;
+            width: 10px;
+            height: 0;
+            border-top: 2px solid var(--btn-text);
+        }
+
+        .btn-filter-toggle.has-filters .filter-funnel-icon::before {
+            border-bottom-color: #38BDF8;
+        }
+
+        .btn-filter-toggle.has-filters .filter-funnel-icon::after {
+            border-top-color: #38BDF8;
+        }
+
+        .btn-filter-toggle .filter-red-x {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #EF4444;
+            color: white;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            line-height: 1;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(239,68,68,0.4);
+        }
+
+        .btn-filter-toggle.has-filters .filter-red-x {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .btn-filter-toggle:not(.has-filters) .filter-red-x {
+            display: none;
+        }
+
+        .module-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: 280px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-left: 1px solid var(--sidebar-border);
+            z-index: 1500;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.25,0.1,0.25,1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -8px 0 40px rgba(0,0,0,0.18);
+        }
+
+        .module-sidebar.open {
+            transform: translateX(0);
+        }
+
+        .sidebar-toggle-btn {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 1501;
+            width: 38px;
+            height: 80px;
+            border-radius: 20px 0 0 20px;
+            background: var(--sidebar-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--sidebar-border);
+            border-right: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: all 0.4s cubic-bezier(0.25,0.1,0.25,1);
+            box-shadow: -4px 0 20px rgba(0,0,0,0.12);
+            writing-mode: vertical-rl;
+            letter-spacing: 2px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .module-sidebar.open~.sidebar-toggle-btn {
+            right: 280px;
+            border-radius: 0 20px 20px 0;
+            border-right: 1px solid var(--sidebar-border);
+            border-left: none;
+        }
+
+        .sidebar-header {
+            padding: 20px 20px 14px;
+            border-bottom: 1px solid var(--sidebar-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-heading);
+        }
+
+        .sidebar-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            color: var(--text-muted);
+            padding: 4px 8px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .sidebar-close-btn:hover {
+            background: var(--sidebar-module-hover);
+            color: var(--text-primary);
+        }
+
+        .sidebar-modules {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-modules::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-modules::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sidebar-modules::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 2px;
+        }
+
+        .sidebar-module-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        .sidebar-module-item:hover {
+            background: var(--sidebar-module-hover);
+            border-color: var(--border);
+        }
+
+        .sidebar-module-item.active {
+            background: var(--sidebar-module-active);
+            border-color: rgba(56,189,248,0.40);
+            font-weight: 700;
+            color: #2563EB;
+        }
+
+        body.theme-dark .sidebar-module-item.active {
+            color: #38BDF8;
+        }
+
+        .sidebar-module-item .module-icon {
+            font-size: 1.2rem;
+            width: 28px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-module-item .module-label {
+            flex: 1;
+        }
+
+        .sidebar-module-item .module-badge {
+            font-size: 0.65rem;
+            background: rgba(56,189,248,0.22);
+            color: #2563EB;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        body.theme-dark .sidebar-module-item .module-badge {
+            color: #38BDF8;
+        }
+
+        .sidebar-footer {
+            padding: 12px 20px;
+            border-top: 1px solid var(--sidebar-border);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 1499;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        .date-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-strong);
+            backdrop-filter: blur(var(--blur-sm));
+            -webkit-backdrop-filter: blur(var(--blur-sm));
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 6px 16px;
+            transition: var(--transition);
+        }
+
+        .date-picker-wrapper:hover {
+            border-color: rgba(56,189,248,0.6);
+            box-shadow: 0 0 20px rgba(56,189,248,0.12);
+        }
+
+        .date-picker-wrapper label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .date-picker-wrapper input {
+            border: none;
+            outline: none;
+            font-size: 0.85rem;
+            background: transparent;
+            color: var(--text-primary);
+            width: 120px;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .date-picker-wrapper input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .search-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 180px;
+            max-width: 320px;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 8px 40px 8px 16px;
+            border: 1px solid var(--input-border);
+            border-radius: 40px;
+            font-size: 0.85rem;
+            outline: none;
+            background: var(--input-bg);
+            backdrop-filter: blur(var(--blur-sm));
+            -webkit-backdrop-filter: blur(var(--blur-sm));
+            transition: var(--transition);
+            font-family: inherit;
+            color: var(--input-text);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .search-wrapper input:focus {
+            border-color: #38BDF8;
+            box-shadow: 0 0 0 4px rgba(56,189,248,0.14);
+        }
+
+        .search-wrapper input::placeholder {
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        .search-wrapper .search-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1rem;
+            pointer-events: none;
+            color: var(--text-muted);
+        }
+
+        button {
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.78rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            font-family: inherit;
+            outline: none;
+            position: relative;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background: var(--btn-bg);
+            letter-spacing: 0.01em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+            border-color: var(--border-strong);
+            background: var(--btn-hover-bg);
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563EB 0%, #38BDF8 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(37,99,235,0.30);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1D4ED8 0%, #0EA5E9 100%);
+            border-color: transparent;
+            box-shadow: 0 8px 24px rgba(37,99,235,0.40);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(139,92,246,0.30);
+        }
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #7C3AED 0%, #8B5CF6 100%);
+            border-color: transparent;
+            box-shadow: 0 8px 24px rgba(139,92,246,0.40);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10B981 0%, #14B8A6 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(16,185,129,0.30);
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669 0%, #0F766E 100%);
+            border-color: transparent;
+            box-shadow: 0 8px 24px rgba(16,185,129,0.40);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
+            border-color: transparent;
+            color: #1C1917;
+            box-shadow: 0 4px 14px rgba(245,158,11,0.30);
+        }
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+            border-color: transparent;
+            box-shadow: 0 8px 24px rgba(245,158,11,0.40);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444 0%, #F87171 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(239,68,68,0.30);
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%);
+            border-color: transparent;
+            box-shadow: 0 8px 24px rgba(239,68,68,0.40);
+        }
+
+        .btn-gray {
+            background: linear-gradient(135deg, #64748B 0%, #94A3B8 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(100,116,139,0.30);
+        }
+        .btn-gray:hover {
+            background: linear-gradient(135deg, #475569 0%, #64748B 100%);
+            border-color: transparent;
+            box-shadow: 0 8px 24px rgba(100,116,139,0.40);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--glass-border);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+        .btn-outline:hover {
+            background: rgba(56,189,248,0.08);
+            border-color: #38BDF8;
+            box-shadow: 0 0 20px rgba(56,189,248,0.18);
+        }
+
+        .btn-edit-toggle {
+            background: rgba(245,158,11,0.18);
+            border: 2px solid rgba(245,158,11,0.45);
+            color: #B45309;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(245,158,11,0.12);
+        }
+        body.theme-dark .btn-edit-toggle {
+            color: #FDE68A;
+        }
+        .btn-edit-toggle.active {
+            background: rgba(245,158,11,0.32);
+            border-color: rgba(245,158,11,0.70);
+            color: #92400E;
+            box-shadow: 0 0 0 6px rgba(245,158,11,0.20);
+            animation: pulse-edit 2.5s infinite;
+        }
+        body.theme-dark .btn-edit-toggle.active {
+            color: #FEF3C7;
+        }
+
+        @keyframes pulse-edit {
+            0%,100%{box-shadow:0 0 0 6px rgba(245,158,11,0.20);}
+            50%{box-shadow:0 0 0 14px rgba(245,158,11,0.06);}
+        }
+
+        .info-badge {
+            background: rgba(16,185,129,0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.72rem;
+            color: #059669;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 1px solid rgba(16,185,129,0.30);
+        }
+        body.theme-dark .info-badge {
+            color: #14B8A6;
+        }
+
+        .row-count-badge {
+            background: rgba(37,99,235,0.12);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.72rem;
+            color: #2563EB;
+            font-weight: 600;
+            white-space: nowrap;
+            border: 1px solid rgba(37,99,235,0.30);
+        }
+        body.theme-dark .row-count-badge {
+            color: #38BDF8;
+        }
+
+        .table-wrapper {
+            flex: 1;
+            min-height: 0;
+            overflow-x: auto;
+            overflow-y: auto;
+            padding: 0;
+            position: relative;
+            background: var(--table-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 0;
+            transition: all var(--transition);
+        }
+
+        .edit-mode-active .table-wrapper {
+            border: 2px dashed var(--edit-mode-border);
+            background: rgba(254,243,199,0.15);
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .table-wrapper::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 3px;
+        }
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 3px;
+        }
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            min-width: 800px;
+            table-layout: fixed;
+        }
+
+        colgroup col {
+            transition: width 0.15s ease;
+        }
+
+        th {
+            background: linear-gradient(180deg, #F1F5F9 0%, #E2E8F0 100%);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            color: #0F172A;
+            padding: 10px 6px;
+            border-bottom: 2px solid #CBD5E1;
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+            cursor: default;
+            user-select: none;
+            transition: background var(--transition);
+        }
+
+        body.theme-dark th {
+            background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+            color: #E2E8F0;
+            border-bottom: 2px solid rgba(255,255,255,0.16);
+        }
+
+        th.sortable {
+            cursor: pointer;
+        }
+        th.sortable:hover {
+            background: linear-gradient(180deg, #E2E8F0 0%, #CBD5E1 100%);
+        }
+        body.theme-dark th.sortable:hover {
+            background: linear-gradient(180deg, #334155 0%, #1E293B 100%);
+        }
+
+        th .sort-icon {
+            margin-right: 3px;
+            font-size: 0.7rem;
+            opacity: 0.4;
+            display: inline-block;
+            width: 14px;
+            text-align: center;
+            color: #64748B;
+        }
+        th.sorted-asc .sort-icon,
+        th.sorted-desc .sort-icon {
+            opacity: 1;
+            color: #2563EB;
+            font-weight: bold;
+        }
+        body.theme-dark th.sorted-asc .sort-icon,
+        body.theme-dark th.sorted-desc .sort-icon {
+            color: #38BDF8;
+        }
+
+        .resize-handle {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: var(--resize-handle-width);
+            cursor: col-resize;
+            z-index: 20;
+            background: transparent;
+            transition: background 0.15s;
+            border-left: 1px solid transparent;
+        }
+        .resize-handle:hover,
+        .resize-handle.active {
+            background: rgba(56,189,248,0.35);
+            border-left: 2px solid #38BDF8;
+        }
+        .resize-handle::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 20%;
+            bottom: 20%;
+            width: 2px;
+            background: rgba(100,116,139,0.35);
+            border-radius: 2px;
+            transform: translateX(-50%);
+            transition: background 0.15s;
+        }
+        .resize-handle:hover::after,
+        .resize-handle.active::after {
+            background: #38BDF8;
+        }
+
+        td {
+            padding: 7px 5px;
+            border-bottom: 1px solid rgba(203,213,225,0.35);
+            text-align: right;
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            transition: background var(--transition), padding var(--transition);
+            color: #1E293B;
+        }
+
+        body.theme-dark td {
+            color: #E2E8F0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        tr:nth-child(even) td {
+            background-color: var(--even-row);
+        }
+        tr:hover td {
+            background-color: var(--hover-row) !important;
+        }
+
+        td.highlight-count {
+            font-weight: bold;
+            background-color: var(--highlight-cell);
+            text-align: center;
+            font-size: 0.85rem;
+            color: #2563EB;
+        }
+        body.theme-dark td.highlight-count {
+            color: #38BDF8;
+        }
+        td.highlight-count.high-value {
+            color: #B45309;
+            font-weight: 700;
+            background-color: rgba(245,158,11,0.18);
+        }
+        body.theme-dark td.highlight-count.high-value {
+            color: #FDE68A;
+        }
+
+        .edit-mode-active td[contenteditable="true"] {
+            background-color: var(--edit-cell-bg) !important;
+            border: 1px dashed var(--edit-mode-border);
+            cursor: text;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .edit-mode-active td[contenteditable="true"]:focus {
+            background-color: var(--edit-cell-focus-bg) !important;
+            border: 2px solid rgba(245,158,11,0.7) !important;
+            box-shadow: 0 0 0 5px rgba(245,158,11,0.15);
+            z-index: 5;
+            position: relative;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(255,255,255,0.15);
+            border-top: 4px solid #38BDF8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            box-shadow: 0 0 30px rgba(56,189,248,0.4);
+        }
+
+        @keyframes spin {
+            to{transform:rotate(360deg);}
+        }
+
+        .loading-text {
+            background: rgba(15,23,42,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #E2E8F0;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--toast-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            color: var(--toast-text);
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+            border: 1px solid var(--glass-border);
+            transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+            pointer-events: none;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success {
+            border-color: rgba(16,185,129,0.50);
+            box-shadow: 0 12px 40px rgba(16,185,129,0.22);
+        }
+        .toast.warning {
+            border-color: rgba(245,158,11,0.50);
+            box-shadow: 0 12px 40px rgba(245,158,11,0.22);
+        }
+        .toast.error {
+            border-color: rgba(239,68,68,0.50);
+            box-shadow: 0 12px 40px rgba(239,68,68,0.22);
+        }
+
+        .footer-note {
+            padding: 0.6rem 1.5rem;
+            border-top: 1px solid var(--glass-border);
+            background: var(--footer-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .sample-link {
+            color: #2563EB;
+            text-decoration: underline;
+            cursor: pointer;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        body.theme-dark .sample-link {
+            color: #38BDF8;
+        }
+        .sample-link:hover {
+            color: #8B5CF6;
+        }
+
+        .print-header {
+            display: none;
+            padding: 15px 20px;
+            border-bottom: 2px solid rgba(203,213,225,0.5);
+            background: #F8FAFC;
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            color: #0F172A;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            border-radius: 16px 16px 0 0;
+        }
+        .print-header div {
+            margin: 3px 0;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--modal-bg);
+            backdrop-filter: blur(36px);
+            -webkit-backdrop-filter: blur(36px);
+            border-radius: 28px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.25);
+            border: 1px solid var(--glass-border-strong);
+            color: var(--modal-text);
+        }
+        .modal h3 {
+            margin-top: 0;
+            color: var(--text-heading);
+            font-weight: 600;
+        }
+        .modal label {
+            display: block;
+            margin-top: 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .modal input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            margin-top: 4px;
+            font-family: inherit;
+            background: var(--input-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--input-text);
+            outline: none;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .modal input:focus {
+            border-color: #38BDF8;
+            box-shadow: 0 0 0 4px rgba(56,189,248,0.14);
+        }
+        .modal .actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        th[draggable="true"] {
+            cursor: grab;
+        }
+        th.dragging {
+            opacity: 0.35;
+            background: rgba(56,189,248,0.30);
+        }
+        th.drag-over {
+            border-right: 3px dashed #38BDF8;
+            box-shadow: inset 0 0 20px rgba(56,189,248,0.20);
+        }
+
+        .theme-toggle-label {
+            position: relative;
+            display: inline-block;
+            width: 56px;
+            height: 28px;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+        .theme-toggle-label input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .theme-toggle-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #94A3B8 0%, #CBD5E1 100%);
+            border-radius: 34px;
+            transition: 0.4s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5px;
+            font-size: 14px;
+            color: #F59E0B;
+        }
+        .theme-toggle-slider:before {
+            content: "";
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input:checked+.theme-toggle-slider {
+            background: linear-gradient(135deg, #2563EB 0%, #8B5CF6 100%);
+        }
+        input:checked+.theme-toggle-slider:before {
+            transform: translateX(28px);
+        }
+        .theme-toggle-slider .icon-sun {
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .theme-toggle-slider .icon-moon {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .pdf-capture-mode,
+        .pdf-capture-mode body,
+        .pdf-capture-mode .app-container {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .pdf-capture-mode .toolbar,
+        .pdf-capture-mode .footer-note,
+        .pdf-capture-mode .header .sub,
+        .pdf-capture-mode #logStatus,
+        .pdf-capture-mode .info-badge,
+        .pdf-capture-mode .row-count-badge,
+        .pdf-capture-mode .resize-handle,
+        .pdf-capture-mode #editModeToggle,
+        .pdf-capture-mode .btn-edit-toggle,
+        .pdf-capture-mode .delete-cell,
+        .pdf-capture-mode .modal-overlay,
+        .pdf-capture-mode #columnManagerBtn,
+        .pdf-capture-mode .theme-toggle-label,
+        .pdf-capture-mode .user-info-bar,
+        .pdf-capture-mode .btn-dashboard,
+        .pdf-capture-mode .filter-panel,
+        .pdf-capture-mode .dropdown-wrapper,
+        .pdf-capture-mode .module-sidebar,
+        .pdf-capture-mode .sidebar-toggle-btn,
+        .pdf-capture-mode .sidebar-overlay,
+        .pdf-capture-mode .dropdown-toggle,
+        .pdf-capture-mode .dropdown-menu,
+        .pdf-capture-mode .btn-filter-toggle {
+            display: none !important;
+        }
+        .pdf-capture-mode .header {
+            background: #ffffff !important;
+            color: #0b2b44 !important;
+            border-bottom: 2px solid #0b2b44;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        .pdf-capture-mode .table-wrapper {
+            max-height: none;
+            overflow: visible;
+            border: none !important;
+            background: #ffffff !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        .pdf-capture-mode table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .pdf-capture-mode th {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-bottom: 2px solid #cbd5e1;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .pdf-capture-mode td {
+            color: #1e293b !important;
+            border-bottom: 1px solid #e2e8f0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .pdf-capture-mode .print-header {
+            display: block !important;
+            background: #ffffff !important;
+            color: #0b2b44 !important;
+            border-bottom: 2px solid #0b2b44;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        @media print {
+            body{background:white;padding:0;overflow:visible;}
+            .theme-toggle-label,.user-info-bar,.btn-dashboard,.filter-panel,.dropdown-wrapper,.module-sidebar,.sidebar-toggle-btn,.sidebar-overlay,.dropdown-toggle,.dropdown-menu,.btn-filter-toggle{display:none !important;}
+            .app-container{box-shadow:none;border-radius:0;max-width:100%;background:white;backdrop-filter:none;-webkit-backdrop-filter:none;border:none;height:auto;}
+            .toolbar,.footer-note,.header .sub,#logStatus,.info-badge,.row-count-badge,.resize-handle,.loading-overlay,.toast,#editModeToggle,.btn-edit-toggle,.delete-cell,.modal-overlay,#columnManagerBtn{display:none !important;}
+            .print-header{display:block !important;background:white !important;color:#0b2b44 !important;border-bottom:2px solid #0b2b44;backdrop-filter:none;-webkit-backdrop-filter:none;}
+            .header{background:white !important;color:#0b2b44 !important;border-bottom:2px solid #0b2b44;padding:1rem;backdrop-filter:none;-webkit-backdrop-filter:none;}
+            .header h1{font-size:1.4rem;color:#0b2b44;}
+            .header::before{display:none;}
+            .table-wrapper{max-height:none;overflow:visible;border:none !important;background:white !important;backdrop-filter:none;-webkit-backdrop-filter:none;}
+            th{position:static;background:#f1f5f9 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#0f172a;backdrop-filter:none;-webkit-backdrop-filter:none;}
+            td{-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#1e293b;}
+            .app-container{border:none;}
+            @page{size:A3 landscape;margin:12mm;}
+        }
+
+        @media (max-width:900px) {
+            .toolbar{flex-direction:column;align-items:stretch;gap:10px;padding:0.8rem;}
+            .toolbar-group{justify-content:center;}
+            .search-wrapper{max-width:100%;}
+            th,td{font-size:0.7rem;padding:5px 3px;}
+            .header h1{font-size:1.1rem;}
+            .resize-handle{width:10px;}
+            .user-info-bar{flex-direction:column;align-items:flex-start;}
+            .module-sidebar{width:260px;}
+            .module-sidebar.open~.sidebar-toggle-btn{right:260px;}
+            .filter-panel-inner{gap:8px;}
+            .filter-group{min-width:120px;max-width:180px;}
+        }
+
+        @media (max-width:600px) {
+            button{font-size:0.68rem;padding:6px 10px;gap:3px;}
+            .date-picker-wrapper input{width:90px;font-size:0.75rem;}
+            .app-container{border-radius:0;}
+            .header{padding:0.8rem 1rem;}
+            .header h1{font-size:1rem;}
+            .modal{padding:16px;border-radius:20px;}
+            .module-sidebar{width:100%;max-width:300px;}
+            .module-sidebar.open~.sidebar-toggle-btn{right:300px;}
+            .dropdown-menu{min-width:180px;right:auto;left:0;}
+            .filter-panel.open{padding:10px 12px;}
+            .filter-group{min-width:100px;max-width:150px;}
+        }
+
+        .modal select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            margin-top: 4px;
+            font-family: inherit;
+            background: var(--input-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--input-text);
+            outline: none;
+            transition: var(--transition);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .modal select:focus {
+            border-color: #38BDF8;
+            box-shadow: 0 0 0 4px rgba(56,189,248,0.14);
+        }
+
+        /* NEW: inline filter row styles */
+        tr.filter-row {
+            display: none;
+        }
+        tr.filter-row.visible {
+            display: table-row;
+        }
+        tr.filter-row td {
+            padding: 2px 4px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border-strong);
+            vertical-align: middle;
+        }
+        tr.filter-row td input,
+        tr.filter-row td select {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            font-size: 0.72rem;
+            background: var(--input-bg);
+            color: var(--input-text);
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+        tr.filter-row td input:focus,
+        tr.filter-row td select:focus {
+            border-color: #38BDF8;
+            box-shadow: 0 0 0 2px rgba(56,189,248,0.2);
+        }
+
+        /* column visibility dropdown checkboxes */
+        .column-visibility-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .column-visibility-item:hover {
+            background: var(--sidebar-module-hover);
+        }
+        .column-visibility-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #2563EB;
+        }
+
+        .status-online {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10B981;
+            margin-left: 4px;
+        }
+    </style>
+منتظر ادامه کد باش بفرستم 
+
+خوبه، این قسمت فقط CSS و ابتدای HTML هست و هنوز به بخشی که خطا می‌دهد نرسیدیم.
+
+خطای شما:
+
+{
+  "ok": false,
+  "message": "آیتم منو پیدا نشد."
+}
+تقریباً ۹۰٪ مواقع از یکی از این موارد است:
+
+PUT /menu-items/:id
+یا
+
+fetch('/api/menu-items/' + itemId)
+که itemId خالی، اشتباه یا undefined است.
+
+برای پیدا کردن مشکل، لطفاً بخش‌های زیر را بفرست:
+
+1. تابع ذخیره سازی
+دنبال این کلمات بگرد و کدش را بفرست:
+
+save
+saveMenu
+saveChanges
+updateMenu
+updateItem
+یا هر دکمه‌ای که هنگام ذخیره اجرا می‌شود.
+
+2. درخواست API
+کدی که شامل اینهاست:
+
+fetch(
+axios(
+XMLHttpRequest(
+خصوصاً جایی که این آدرس‌ها استفاده شده‌اند:
+
+/flight-menu
+/menu
+/menu-items
+/api
+3. حالت ویرایش جدول
+کدی که سطر جدول را editable می‌کند:
+
+contenteditable
+و همچنین:
+
+data-id
+data-menu-id
+row.id
+menuId
+4. مهم‌ترین قسمت
+وقتی روی ذخیره می‌زنی و این خطا می‌آید:
+
+F12
+
+تب Network
+
+روی درخواست قرمز رنگ کلیک کن
+
+این سه قسمت را کپی کن:
+
+Request URL
+
+...
+Request Payload
+
+...
+Response
+
+...
+فعلاً ادامه فایل را نفرست.
+
+از فایل ۳۳۱۵ خطی فقط این قسمت‌ها را بفرست:
+
+تابع ذخیره (حدود 50 تا 100 خط)
+
+fetch مربوط به ذخیره
+
+HTML دکمه ذخیره
+
+این سه قسمت را بفرستی معمولاً ظرف چند دقیقه مشخص می‌شود چرا سرور می‌گوید:
+
+"آیتم منو پیدا نشد"
+و اینکه مشکل از فرانت‌اند است یا بک‌اند.
+
+
+قسمت دوم 
+
+</head>
+<body class="theme-light">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">⏳ در حال پردازش...</div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="module-sidebar" id="moduleSidebar">
+        <div class="sidebar-header">
+            <h3>🧭 ماژول‌های سامانه</h3>
+            <button class="sidebar-close-btn" id="sidebarCloseBtn" title="بستن">✕</button>
+        </div>
+        <div class="sidebar-modules" id="sidebarModules"></div>
+        <div class="sidebar-footer">
+            <span>🏢 <strong id="sidebarCompanyName">---</strong></span> |
+            <span>👤 <strong id="sidebarUsername">---</strong></span> |
+            <span id="sidebarRole">---</span>
+        </div>
+    </div>
+
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="ماژول‌ها">🧭 ماژول‌ها</button>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="header-title-group">
+                <h1>✈️ گزارش کل منوی پروازی</h1>
+            </div>
+            <div class="sub" id="dynamicTitle">📅 در حال محاسبه...</div>
+        </div>
+
+        <div class="user-info-bar" id="userInfoBar">
+            <div class="user-details">
+                <span>👤 <strong id="displayFullName">---</strong></span>
+                <span>🔹 نام کاربری: <strong id="displayUsername">---</strong></span>
+                <span>🏢 شرکت: <strong id="displayCompanyName">---</strong> (کد: <strong id="displayCompanyId">---</strong>)</span>
+                <span>🔹 نقش: <strong id="displayRole">---</strong></span>
+                <span>🧭 ماژول: <strong>منوی پروازی</strong></span>
+                <span><span class="status-online"></span> وضعیت: آنلاین</span>
+            </div>
+            <button class="btn-dashboard btn-outline" id="exitSaveBtn">💾 Exit & Save</button>
+        </div>
+
+        <div class="print-header" id="printHeader">
+            <div>📅 تاریخ تولید: <span id="printProdDate"></span> (<span id="printProdDay"></span>)</div>
+            <div>📅 تاریخ پروازی: <span id="printFlightDate"></span> (<span id="printFlightDay"></span>)</div>
+        </div>
+
+        <div class="toolbar" id="mainToolbar">
+            <div class="toolbar-group toolbar-group--left">
+                <div class="date-picker-wrapper" id="datePickerWrapper">
+                    <label>📅 تاریخ تولید:</label>
+                    <input type="text" id="productionDateInput" placeholder="YYYY/MM/DD" readonly>
+                </div>
+                <div class="search-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="جستجو در تمام ستون‌ها...">
+                </div>
+                <button id="filterToggleBtn" class="btn-outline btn-filter-toggle" title="فیلترهای ستونی">
+                    <span class="filter-funnel-icon"></span>
+                    فیلترها
+                    <span class="filter-red-x">✕</span>
+                </button>
+                <div class="dropdown-wrapper" id="dropdownColumnsWrapper">
+                    <button class="dropdown-toggle" id="dropdownColumnsToggle">🗂️ Hide / Show Columns <span class="dropdown-arrow">▾</span></button>
+                    <div class="dropdown-menu" id="dropdownColumnsMenu" style="max-height: 250px; overflow-y: auto;">
+                        <span class="dropdown-label">ستون‌های قابل نمایش</span>
+                        <div id="columnCheckboxContainer"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="toolbar-group toolbar-group--center">
+                <div class="dropdown-wrapper" id="dropdownExports">
+                    <button class="dropdown-toggle" id="dropdownExportsToggle">📤 خروجی‌ها <span class="dropdown-arrow">▾</span></button>
+                    <div class="dropdown-menu" id="dropdownExportsMenu">
+                        <span class="dropdown-label">گزارش و خروجی</span>
+                        <button id="exportExcelBtn">📊 Excel</button>
+                        <button id="exportPDFBtn">📄 PDF</button>
+                        <button id="printBtn">🖨️ چاپ</button>
+                    </div>
+                </div>
+                <div class="dropdown-wrapper" id="dropdownArchive">
+                    <button class="dropdown-toggle" id="dropdownArchiveToggle">📦 بایگانی <span class="dropdown-arrow">▾</span></button>
+                    <div class="dropdown-menu" id="dropdownArchiveMenu">
+                        <span class="dropdown-label">ذخیره و بازیابی</span>
+                        <button id="saveArchiveBtn">💾 ذخیره بایگانی</button>
+                        <button id="loadArchiveBtn">📂 بارگذاری بایگانی</button>
+                        <div class="dropdown-divider"></div>
+                        <button id="saveChangesBtn">💾 ذخیره تغییرات</button>
+                        <button id="loadLogBtn">📂 بارگذاری لاگ</button>
+                    </div>
+                </div>
+                <div class="dropdown-wrapper" id="dropdownTools">
+                    <button class="dropdown-toggle" id="dropdownToolsToggle">🔧 ابزارها <span class="dropdown-arrow">▾</span></button>
+                    <div class="dropdown-menu" id="dropdownToolsMenu">
+                        <span class="dropdown-label">عملیات</span>
+                        <button id="addItemBtn">➕ افزودن آیتم جدید</button>
+                        <button id="addColumnBtn">➕ افزودن ستون جدید</button>
+                        <button id="resetTableBtn">🔄 بازنشانی جمع‌کل</button>
+                        <button id="editModeToggle" class="btn-edit-toggle">✏️ حالت ویرایش</button>
+                    </div>
+                </div>
+                <button id="loadSampleBtn" class="btn-accent">📋 نمونه</button>
+            </div>
+            <div class="toolbar-group toolbar-group--right">
+                <span class="row-count-badge" id="rowCountBadge">📋 ۱۰۱ ردیف</span>
+                <span class="info-badge" id="logStatus">⏳ آماده</span>
+                <button id="resetDataBtn" class="btn-danger" title="بازگردانی اطلاعات اولیه و حذف تغییرات">↩️ بازگردانی اولیه</button>
+                <label class="theme-toggle-label" title="تغییر تم">
+                    <input type="checkbox" id="themeToggleCheckbox">
+                    <span class="theme-toggle-slider">
+                        <span class="icon-sun">☀️</span>
+                        <span class="icon-moon">🌙</span>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="table-wrapper" id="tableContainer">
+            <div class="empty-message">در حال بارگذاری داده‌های منو ...</div>
+        </div>
+
+        <div class="footer-note">
+            <span>🔹 تاریخ تولید و پروازی بر اساس انتخاب شما محاسبه می‌شوند. | جستجو: Real-time | مرتب‌سازی: کلیک روی هدر | تغییر عرض ستون: کشیدن لبه | فیلترها: 🔍</span>
+            <span class="sample-link" id="downloadSampleLogLink">📥 دریافت نمونه فایل log.json</span>
+        </div>
+    </div>
+
+    <!-- Modal for adding new item -->
+    <div class="modal-overlay" id="addModalOverlay">
+        <div class="modal">
+            <h3>➕ افزودن آیتم جدید</h3>
+            <label>شرح سرویس منو</label>
+            <input type="text" id="addField1" placeholder="شرح سرویس">
+            <label>نوع پک غذا</label>
+            <input type="text" id="addField2" placeholder="نوع پک">
+            <label>کد محصول پک</label>
+            <input type="text" id="addField3" placeholder="کد محصول پک">
+            <label>نوع سرویس نفرات</label>
+            <input type="text" id="addField4" placeholder="مسافری/کرو/...">
+            <label>کد محصول رسپی</label>
+            <input type="text" id="addField5" placeholder="کد محصول رسپی">
+            <label>نوع سرویس رسپی</label>
+            <input type="text" id="addField6" placeholder="نوع سرویس رسپی">
+            <label>واحد تولیدی</label>
+            <input type="text" id="addField7" placeholder="واحد تولیدی">
+            <label>مخفف سرویس</label>
+            <input type="text" id="addField8" placeholder="مخفف">
+            <label>جمع کل</label>
+            <input type="number" id="addField9" placeholder="۰" min="0" value="0">
+            <div class="actions">
+                <button class="btn-gray" onclick="closeAddModal()">انصراف</button>
+                <button class="btn-primary" onclick="submitNewItem()">ذخیره</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding custom column -->
+    <div class="modal-overlay" id="customColumnModalOverlay">
+        <div class="modal">
+            <h3>➕ افزودن ستون جدید</h3>
+            <label>نام ستون</label>
+            <input type="text" id="customColumnName" placeholder="نام ستون جدید را وارد کنید">
+            <label>نوع ستون</label>
+            <select id="customColumnType">
+                <option value="text">Text</option>
+                <option value="number">Number</option>
+                <option value="currency">Currency</option>
+                <option value="date">Date</option>
+                <option value="time">Time</option>
+                <option value="dropdown">Dropdown</option>
+                <option value="checkbox">Checkbox</option>
+            </select>
+            <div class="actions">
+                <button class="btn-gray" onclick="closeCustomColumnModal()">انصراف</button>
+                <button class="btn-primary" onclick="submitCustomColumn()">ایجاد ستون</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for archive loading -->
+    <div class="modal-overlay" id="archiveModalOverlay">
+        <div class="modal" style="max-width: 700px;">
+            <h3>📂 بارگذاری بایگانی</h3>
+            <input type="text" id="archiveSearchInput" placeholder="جستجو در بایگانی‌ها..." style="margin-bottom: 12px;">
+            <div id="archiveList" style="max-height: 50vh; overflow-y: auto;"></div>
+            <div class="actions">
+                <button class="btn-gray" onclick="closeArchiveModal()">بستن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Exit & Save confirmation -->
+    <div class="modal-overlay" id="exitModalOverlay">
+        <div class="modal">
+            <h3>💾 خروج و ذخیره‌سازی</h3>
+            <div id="exitSummary"></div>
+            <div class="actions">
+                <button class="btn-gray" id="exitCancelBtn">انصراف</button>
+                <button class="btn-danger" id="exitWithoutSaveBtn">خروج بدون ذخیره</button>
+                <button class="btn-primary" id="exitSaveAndExitBtn">💾 ذخیره و خروج</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="logFileInput" accept=".json" style="display: none;">
+
+    <script>
+        (function() {
+            const API_BASE = 'http://localhost:9000';
+            const currentUser = (() => {
+                try {
+                    const stored = localStorage.getItem('currentUser');
+                    if (!stored) return null;
+                    const user = JSON.parse(stored);
+                    if (!user || !user.username) return null;
+                    return user;
+                } catch (e) { return null; }
+            })();
+
+            if (!currentUser || !currentUser.username) {
+                alert('⛔ دسترسی غیرمجاز. لطفاً وارد شوید.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const currentUsername = currentUser.username;
+
+            document.getElementById('displayFullName').textContent = currentUser.fullName || '---';
+            document.getElementById('displayUsername').textContent = currentUsername;
+            document.getElementById('displayCompanyName').textContent = currentUser.companyName || '---';
+            document.getElementById('displayCompanyId').textContent = currentUser.companyId || '---';
+            document.getElementById('displayRole').textContent = getRoleDisplayName(currentUser.role);
+
+            function getRoleDisplayName(role) {
+                const roleMap = {
+                    'admin': 'مدیر سیستم',
+                    'manager': 'مدیر',
+                    'supervisor': 'سرپرست',
+                    'chef': 'سرآشپز',
+                    'staff': 'کارمند',
+                    'operator': 'اپراتور',
+                    'viewer': 'ناظر',
+                    'user': 'کاربر'
+                };
+                return roleMap[role] || role || 'کاربر';
+            }
+
+            let menuDatabase = null;
+            let hasUnsavedChanges = false;
+            let unsavedStats = { editedRows: new Set(), addedRows: 0, deletedRows: 0 };
+
+            // Keep original snapshot to detect changes
+            let originalMenuData = [];
+            let originalCountsMap = {};
+
+            function markUnsaved() { hasUnsavedChanges = true; }
+            function clearUnsaved() { 
+                hasUnsavedChanges = false; 
+                unsavedStats.editedRows.clear();
+                unsavedStats.addedRows = 0;
+                unsavedStats.deletedRows = 0;
+                // Update originals after saving
+                originalMenuData = JSON.parse(JSON.stringify(currentMenuData));
+                originalCountsMap = { ...currentCountsMap };
+            }
+
+            function escapeHtml(text) {
+                if (text == null) return '';
+                return String(text)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+
+            function toPersianDigits(input) {
+                if (input == null) return '';
+                return String(input).replace(/[0-9]/g, function(d) {
+                    return String.fromCharCode(d.charCodeAt(0) + 1728);
+                });
+            }
+
+            function toEnglishDigits(input) {
+                if (input == null) return '';
+                const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+                let result = '';
+                for (let ch of String(input)) {
+                    const idx = persianDigits.indexOf(ch);
+                    if (idx >= 0) result += idx;
+                    else result += ch;
+                }
+                return result;
+            }
+
+            // Fallback to local template if server fails
+            async function loadBaseTemplate() {
+                try {
+                    const response = await fetch('DataMn.json');
+                    if (!response.ok) throw new Error('DataMn.json not found');
+                    const json = await response.json();
+                    if (!json || !Array.isArray(json.menuItems)) throw new Error('Invalid JSON format');
+                    return json;
+                } catch (err) {
+                    showToast('❌ بارگذاری قالب پایه ناموفق بود.', 'error');
+                    throw err;
+                }
+            }
+
+            // Load from GET /menu (server API)
+            async function loadUserMenuData() {
+                try {
+                    console.log([API] GET ${API_BASE}/menu);
+                    const res = await fetch(${API_BASE}/menu);
+                    if (res.ok) {
+                        const data = await res.json();
+                        console.log('[API] GET /menu response:', data);
+                        if (data && Array.isArray(data)) {
+                            // server returns array of items, reconstruct counts and customColumns from items
+                            const menuItems = data.map(item => {
+                                const { count, ...rest } = item;
+                                return rest;
+                            });
+                            const counts = {};
+                            data.forEach(item => {
+                                if (item.serviceNameId && typeof item.count === 'number') {
+                                    counts[item.serviceNameId] = item.count;
+                                }
+                            });
+                            // customColumns not persisted via /menu, keep from localStorage
+                            const savedCC = loadFromLS('customColumns', []);
+                            return { menuItems, counts, customColumns: savedCC };
+                        } else if (data && data.menuItems) {
+                            // fallback if server returns wrapped object
+                            return {
+                                menuItems: data.menuItems,
+                                counts: data.counts || {},
+                                customColumns: data.customColumns || []
+                            };
+                        }
+                    }
+                    showToast('📂 سرور داده‌ای ندارد، ایجاد پایگاه اولیه...', 'warning');
+                    const base = await loadBaseTemplate();
+                    // Initial server population
+                    await syncDataToServer(base.menuItems, {}, []);
+                    return { menuItems: base.menuItems, counts: {}, customColumns: [] };
+                } catch (err) {
+                    console.error('[API] loadUserMenuData error:', err);
+                    showToast('❌ اتصال به سرور برقرار نشد. تلاش برای استفاده از داده محلی.', 'error');
+                    try {
+                        const base = await loadBaseTemplate();
+                        return { menuItems: base.menuItems, counts: {}, customColumns: [] };
+                    } catch (e) {
+                        return null;
+                    }
+                }
+            }
+
+            // Sync changes to server using POST/PUT/DELETE
+            async function syncDataToServer(menuData, countsMap, customCols) {
+                const originalIds = originalMenuData.map(item => item.serviceNameId);
+                const currentIds = menuData.map(item => item.serviceNameId);
+
+                const addedItems = menuData.filter(item => !originalIds.includes(item.serviceNameId));
+                const deletedIds = originalIds.filter(id => !currentIds.includes(id));
+                const editedItems = menuData.filter(item => {
+                    if (addedItems.includes(item)) return false;
+                    const originalItem = originalMenuData.find(oi => oi.serviceNameId === item.serviceNameId);
+                    if (!originalItem) return false;
+                    // Check if any field changed or count changed
+                    const fieldsChanged = Object.keys(item).some(key => {
+                        if (key === 'serviceNameId' || key === 'id') return false;
+                        return item[key] !== originalItem[key];
+                    });
+                    const countChanged = (countsMap[item.serviceNameId] || 0) !== (originalCountsMap[item.serviceNameId] || 0);
+                    return fieldsChanged || countChanged || unsavedStats.editedRows.has(item.serviceNameId);
+                });
+
+                console.log([API] Sync: ${addedItems.length} added, ${editedItems.length} edited, ${deletedIds.length} deleted);
+
+                // Process additions
+                for (const item of addedItems) {
+                    const payload = { ...item, count: countsMap[item.serviceNameId] || 0 };
+                    console.log([API] POST /menu, payload);
+                    try {
+                        const res = await fetch(${API_BASE}/menu, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!res.ok) throw new Error(await res.text());
+                        console.log('[API] POST success');
+                    } catch (e) {
+                        console.error('[API] POST failed:', e);
+                        throw new Error('افزودن آیتم ناموفق: ' + e.message);
+                    }
+                }
+
+                // Process edits
+                for (const item of editedItems) {
+                    const payload = { ...item, count: countsMap[item.serviceNameId] || 0 };
+                    console.log([API] PUT /menu/${item.serviceNameId}, payload);
+                    try {
+                        const res = await fetch(${API_BASE}/menu/${encodeURIComponent(item.serviceNameId)}, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        if (!res.ok) throw new Error(await res.text());
+                        console.log('[API] PUT success');
+                    } catch (e) {
+                        console.error('[API] PUT failed:', e);
+                        throw new Error('ویرایش آیتم ناموفق: ' + e.message);
+                    }
+                }
+
+                // Process deletions
+                for (const id of deletedIds) {
+                    console.log([API] DELETE /menu/${id});
+                    try {
+                        const res = await fetch(${API_BASE}/menu/${encodeURIComponent(id)}, { method: 'DELETE' });
+                        if (!res.ok) throw new Error(await res.text());
+                        console.log('[API] DELETE success');
+                    } catch (e) {
+                        console.error('[API] DELETE failed:', e);
+                        throw new Error('حذف آیتم ناموفق: ' + e.message);
+                    }
+                }
+
+                // Custom columns remain in localStorage
+                saveToLS('customColumns', customCols);
+                return true;
+            }
+
+            // Save to server and update originals
+            async function saveDataToServer() {
+                try {
+                    await syncDataToServer(currentMenuData, currentCountsMap, customColumns);
+                    // After successful sync, reload latest data from server to ensure consistency
+                    const fresh = await loadUserMenuData();
+                    if (fresh) {
+                        currentMenuData = fresh.menuItems;
+                        currentCountsMap = fresh.counts;
+                        customColumns = fresh.customColumns;
+                    }
+                    clearUnsaved();
+                    return true;
+                } catch (err) {
+                    console.error('[API] saveDataToServer failed:', err);
+                    showToast('❌ ذخیره‌سازی روی سرور ناموفق بود: ' + err.message, 'error');
+                    throw err;
+                }
+            }
+
+            const allColumnDefs = [
+                { key: 'ردیف', label: 'ردیف', dataField: 'ردیف', editable: false, dateColumn: false,
+                    defaultWidth: 55, minWidth: 35 },
+                { key: 'روز تولید', label: 'روز تولید', dataField: null, editable: false, dateColumn: true,
+                    dateType: 'day', defaultWidth: 85, minWidth: 35 },
+                { key: 'تاریخ تولید', label: 'تاریخ تولید', dataField: null, editable: false, dateColumn: true,
+                    dateType: 'date', defaultWidth: 105, minWidth: 35 },
+                { key: 'روز پروازی', label: 'روز پروازی', dataField: null, editable: false, dateColumn: true,
+                    dateType: 'flightDay', defaultWidth: 85, minWidth: 35 },
+                { key: 'تاریخ پروازی', label: 'تاریخ پروازی', dataField: null, editable: false, dateColumn: true,
+                    dateType: 'flightDate', defaultWidth: 105, minWidth: 35 },
+                { key: 'شرح سرویس منو', label: 'شرح سرویس منو', dataField: 'شرح سرویس منو', editable: true,
+                    defaultWidth: 195, minWidth: 35 },
+                { key: 'نوع پک غذا', label: 'نوع پک غذا', dataField: 'نوع پک غذا', editable: true, defaultWidth: 175,
+                    minWidth: 35 },
+                { key: 'کد محصول پک', label: 'کد محصول پک', dataField: 'کد محصول پک', editable: true, defaultWidth: 115,
+                    minWidth: 35 },
+                { key: 'نوع سرویس نفرات', label: 'نوع سرویس نفرات', dataField: 'نوع سرویس نفرات', editable: true,
+                    defaultWidth: 120, minWidth: 35 },
+                { key: 'کد محصول رسپی', label: 'کد محصول رسپی', dataField: 'کد محصول رسپی', editable: true,
+                    defaultWidth: 110, minWidth: 35 },
+                { key: 'نوع سرویس رسپی', label: 'نوع سرویس رسپی', dataField: 'نوع سرویس رسپی', editable: true,
+                    defaultWidth: 130, minWidth: 35 },
+                { key: 'جمع کل', label: 'جمع کل', dataField: 'جمع کل', editable: true, isCount: true, defaultWidth: 85,
+                    minWidth: 35 },
+                { key: 'واحد تولیدی', label: 'واحد تولیدی', dataField: 'واحد تولیدی', editable: true, defaultWidth: 125,
+                    minWidth: 35 },
+                { key: 'مخفف سرویس', label: 'مخفف سرویس', dataField: 'مخفف سرویس', editable: true, defaultWidth: 115,
+                    minWidth: 35 }
+            ];
+
+            const actionColumnDef = { key: 'actions', label: 'حذف', dataField: null, editable: false, actionColumn: true,
+                defaultWidth: 50, minWidth: 40 };
+
+            const LS_PREFIX = 'flightMenu_v2_';
+
+            let currentMenuData = [];
+            let currentCountsMap = {};
+            let sortState = { column: null, direction: null };
+            let searchQuery = '';
+            let currentProductionDate = new Date();
+            let currentFlightDate = new Date(currentProductionDate.getTime() + 86400000);
+            let editMode = false;
+            let columnWidths = {};
+            let visibleColumns = [];
+            let isResizing = false;
+            let resizeColIndex = null;
+            let resizeStartX = 0;
+            let resizeStartWidth = 0;
+            let draggedColumnKey = null;
+            let activeFilters = {};
+            let filterRowVisible = false;
+            let availableFilterValues = {};
+            let customColumns = [];
+
+            function getAllColumnDefs() {
+                const baseDefs = [...allColumnDefs];
+                const customDefs = customColumns.map(cc => ({
+                    key: cc.key,
+                    label: cc.label,
+                    dataField: cc.dataField || cc.key,
+                    editable: true,
+                    dateColumn: false,
+                    isCount: false,
+                    isCustom: true,
+                    columnType: cc.type || 'text',
+                    defaultWidth: cc.defaultWidth || 150,
+                    minWidth: cc.minWidth || 50
+                }));
+                return [...baseDefs, ...customDefs];
+            }
+
+            function saveToLS(key, value) {
+                try {
+                    localStorage.setItem(LS_PREFIX + key, JSON.stringify(value));
+                } catch (e) {
+                    if (e.name === 'QuotaExceededError') {
+                        showToast('⚠️ فضای ذخیره‌سازی پر است.', 'error');
+                    }
+                }
+            }
+
+            function loadFromLS(key, defaultValue) {
+                try { const raw = localStorage.getItem(LS_PREFIX + key); return raw !== null ? JSON.parse(raw) : defaultValue; } catch (e) { return defaultValue; }
+            }
+
+            async function saveUiState() {
+                saveToLS('visibleColumns', visibleColumns);
+                saveToLS('colWidths', columnWidths);
+                saveToLS('sortState', sortState);
+                saveToLS('searchQuery', searchQuery);
+                saveToLS('editMode', editMode);
+                saveToLS('prodDate', toPersianDateStr(currentProductionDate));
+                saveToLS('activeFilters', activeFilters);
+                saveToLS('filterRowVisible', filterRowVisible);
+            }
+
+            async function saveData() {
+                await saveDataToServer();
+                await saveUiState();
+            }
+
+            async function loadData(serverData) {
+                if (!menuDatabase) return;
+                if (serverData) {
+                    currentMenuData = serverData.menuItems;
+                    currentCountsMap = serverData.counts || {};
+                    customColumns = serverData.customColumns || [];
+                } else {
+                    currentMenuData = JSON.parse(JSON.stringify(menuDatabase.menuItems));
+                    currentCountsMap = {};
+                    customColumns = [];
+                }
+                // Set originals
+                originalMenuData = JSON.parse(JSON.stringify(currentMenuData));
+                originalCountsMap = { ...currentCountsMap };
+
+                const allCols = getAllColumnDefs();
+                visibleColumns = loadFromLS('visibleColumns', null);
+                if (!visibleColumns || !Array.isArray(visibleColumns) || visibleColumns.length === 0) {
+                    visibleColumns = allCols.map(c => c.key);
+                }
+                columnWidths = loadFromLS('colWidths', {});
+                sortState = loadFromLS('sortState', { column: null, direction: null });
+                searchQuery = loadFromLS('searchQuery', '');
+                document.getElementById('searchInput').value = searchQuery;
+                editMode = loadFromLS('editMode', false);
+                activeFilters = loadFromLS('activeFilters', {});
+                filterRowVisible = loadFromLS('filterRowVisible', false);
+                const savedDate = loadFromLS('prodDate', null);
+                if (savedDate) {
+                    const d = persianStrToDate(savedDate);
+                    if (d && !isNaN(d.getTime())) {
+                        currentProductionDate = d;
+                        currentFlightDate = new Date(d.getTime() + 86400000);
+                    }
+                }
+                allCols.forEach(col => {
+                    if (!columnWidths[col.key] || columnWidths[col.key] < col.minWidth) {
+                        columnWidths[col.key] = col.defaultWidth;
+                    }
+                });
+                if (!columnWidths['actions']) columnWidths['actions'] = actionColumnDef.defaultWidth;
+                customColumns.forEach(cc => {
+                    currentMenuData.forEach(item => {
+                        if (!(cc.dataField in item)) {
+                            item[cc.dataField] = null;
+                        }
+                    });
+                });
+                clearUnsaved();
+            }
+
+            async function resetToOriginalData() {
+                if (confirm('⚠️ آیا از بازگردانی به اطلاعات اولیه اطمینان دارید؟ تمام تغییرات کاربر حذف می‌شود.')) {
+                    currentMenuData = JSON.parse(JSON.stringify(menuDatabase.menuItems));
+                    currentCountsMap = {};
+                    customColumns = [];
+                    activeFilters = {};
+                    filterRowVisible = false;
+                    clearUnsaved();
+                    await saveData();
+                    renderFullTable();
+                    showToast('🔄 اطلاعات اولیه بازیابی شد.');
+                }
+            }
+
+            function toPersianDateStr(date) {
+                const j = jalaali.toJalaali(date.getFullYear(), date.getMonth() + 1, date.getDate());
+                return ${j.jy}/${String(j.jm).padStart(2,'0')}/${String(j.jd).padStart(2,'0')};
+            }
+
+            function getPersianWeekday(date) {
+                const days = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه', 'شنبه'];
+                return days[date.getDay()];
+            }
+
+            function persianStrToDate(str) {
+                const parts = str.split('/');
+                if (parts.length !== 3) return null;
+                const jy = parseInt(parts[0]),
+                    jm = parseInt(parts[1]),
+                    jd = parseInt(parts[2]);
+                if (isNaN(jy) || isNaN(jm) || isNaN(jd)) return null;
+                try { const g = jalaali.toGregorian(jy, jm, jd); return new Date(g.gy, g.gm - 1, g.gd); } catch (e) { return null; }
+            }
+
+            function parsePersianNumber(str) {
+                if (!str) return NaN;
+                const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+                let normalized = '';
+                for (let ch of str) {
+                    const idx = persianDigits.indexOf(ch);
+                    if (idx >= 0) normalized += idx;
+                    else if (ch >= '0' && ch <= '9') normalized += ch;
+                    else if (ch === ',' || ch === '،') continue;
+                    else if (ch === '-') normalized += '-';
+                }
+                return parseFloat(normalized);
+            }
+
+            function showToast(msg, type = 'success') {
+                const t = document.getElementById('toast');
+                t.textContent = toPersianDigits(msg);
+                t.className = 'toast ' + type;
+                clearTimeout(window.toastTimer);
+                requestAnimationFrame(() => t.classList.add('show'));
+                window.toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+            }
+
+            function setStatus(msg, err = false) {
+                const el = document.getElementById('logStatus');
+                el.textContent = msg;
+                el.style.color = err ? 'var(--danger)' : 'var(--success)';
+            }
+
+            function getVisibleColumnsDefs() {
+                const allCols = getAllColumnDefs();
+                const cols = [];
+                visibleColumns.forEach(key => {
+                    const colDef = allCols.find(c => c.key === key);
+                    if (colDef) cols.push(colDef);
+                });
+                cols.push(actionColumnDef);
+                return cols;
+            }
+
+            function buildAvailableFilterValues() {
+                availableFilterValues = {};
+                const allCols = getAllColumnDefs().filter(c => !c.dateColumn && c.key !== 'ردیف' && c.key !== 'جمع کل' && c.key !== 'actions');
+                allCols.forEach(col => {
+                    const valSet = new Set();
+                    currentMenuData.forEach(item => {
+                        const val = item[col.dataField];
+                        if (val !== null && val !== undefined && val !== '') {
+                            valSet.add(String(val).trim());
+                        }
+                    });
+                    availableFilterValues[col.key] = [...valSet].sort((a, b) => a.localeCompare(b, 'fa'));
+                });
+            }
+
+            function renderFullTable() {
+                const container = document.getElementById('tableContainer');
+                const visibleDefs = getVisibleColumnsDefs();
+                const filtered = getFilteredSortedItems();
+
+                document.getElementById('rowCountBadge').textContent =
+                    📋 ${toPersianDigits(filtered.length.toLocaleString('en-US'))} از ${toPersianDigits(currentMenuData.length.toLocaleString('en-US'))} ردیف;
+
+                if (!filtered.length) { container.innerHTML = '<div class="empty-message">🔍 هیچ ردیفی یافت نشد.</div>'; return; }
+
+                const prodDay = getPersianWeekday(currentProductionDate);
+                const prodDate = toPersianDateStr(currentProductionDate);
+                const flightDay = getPersianWeekday(currentFlightDate);
+                const flightDate = toPersianDateStr(currentFlightDate);
+
+                document.getElementById('printProdDate').textContent = toPersianDigits(prodDate);
+                document.getElementById('printProdDay').textContent = prodDay;
+                document.getElementById('printFlightDate').textContent = toPersianDigits(flightDate);
+                document.getElementById('printFlightDay').textContent = flightDay;
+
+                let colgroup = '<colgroup>';
+                visibleDefs.forEach(col => {
+                    const w = columnWidths[col.key] || col.defaultWidth;
+                    colgroup += <col style="width:${Math.max(w, col.minWidth || 5)}px;">;
+                });
+                colgroup += '</colgroup>';
+
+                let thead = '<thead>';
+                thead += '<tr>';
+                visibleDefs.forEach((col, idx) => {
+                    let classes = col.actionColumn ? '' : 'sortable';
+                    let icon = ' ⇅';
+                    if (sortState.column === col.key && !col.actionColumn) {
+                        classes += sortState.direction === 'asc' ? ' sorted-asc' : ' sorted-desc';
+                        icon = sortState.direction === 'asc' ? ' ▲' : ' ▼';
+                    }
+                    const draggableAttr = !col.actionColumn ? ' draggable="true"' : '';
+                    thead += <th class="${classes}" data-column="${col.key}" data-col-index="${idx}"${draggableAttr}>${col.label}<span class="sort-icon">${icon}</span><div class="resize-handle" data-col-index="${idx}"></div></th>;
+                });
+                thead += '</tr>';
+
+                const rowClass = filterRowVisible ? 'filter-row visible' : 'filter-row';
+                thead += <tr class="${rowClass}" id="filterRow">;
+                visibleDefs.forEach((col, idx) => {
+                    if (col.actionColumn) {
+                        thead += '<td></td>';
+                        return;
+                    }
+                    const currentVal = activeFilters[col.key] || '';
+                    let inputHtml = '';
+                    const hasDropdown = !col.dateColumn && col.key !== 'ردیف' && col.key !== 'جمع کل' && availableFilterValues[col.key] && availableFilterValues[col.key].length > 0 && availableFilterValues[col.key].length <= 50;
+                    if (col.key === 'جمع کل') {
+                        inputHtml = <input type="text" data-filter-column="${col.key}" placeholder="فیلتر عددی" value="${escapeHtml(currentVal)}" class="filter-field">;
+                    } else if (col.dateColumn) {
+                        inputHtml = <input type="text" data-filter-column="${col.key}" placeholder="جستجو..." value="${escapeHtml(currentVal)}" class="filter-field">;
+                    } else if (hasDropdown) {
+                        let opts = '<option value="">همه</option>';
+                        availableFilterValues[col.key].forEach(val => {
+                            const selected = currentVal === val ? ' selected' : '';
+                            opts += <option value="${escapeHtml(val)}"${selected}>${escapeHtml(val)}</option>;
+                        });
+                        inputHtml = <select data-filter-column="${col.key}" class="filter-field">${opts}</select>;
+                    } else {
+                        inputHtml = <input type="text" data-filter-column="${col.key}" placeholder="جستجو..." value="${escapeHtml(currentVal)}" class="filter-field">;
+                    }
+                    thead += <td>${inputHtml}</td>;
+                });
+                thead += '</tr>';
+                thead += '</thead>';
+
+                let tbody = '<tbody>';
+                filtered.forEach(item => {
+                    const sid = item.serviceNameId;
+                    const countVal = currentCountsMap[sid] || 0;
+                    tbody += <tr data-service-id="${sid}">;
+                    visibleDefs.forEach((col, ci) => {
+                        if (col.actionColumn) {
+                            tbody += <td class="delete-cell" data-col-index="${ci}"><button class="btn-danger" style="padding:2px 8px; font-size:0.7rem;" onclick="deleteItem('${sid}')">🗑️</button></td>;
+                            return;
+                        }
+                        let cellValue = '';
+                        let isCount = false;
+                        if (col.key === 'ردیف') cellValue = escapeHtml(toPersianDigits(item['ردیف']));
+                        else if (col.key === 'روز تولید') cellValue = prodDay;
+                        else if (col.key === 'تاریخ تولید') cellValue = toPersianDigits(prodDate);
+                        else if (col.key === 'روز پروازی') cellValue = flightDay;
+                        else if (col.key === 'تاریخ پروازی') cellValue = toPersianDigits(flightDate);
+                        else if (col.key === 'جمع کل') { 
+                            cellValue = escapeHtml(toPersianDigits(countVal.toLocaleString('en-US'))); 
+                            isCount = true; 
+                        } else { 
+                            cellValue = escapeHtml(toPersianDigits(item[col.dataField] || '')); 
+                        }
+                        let tdClass = '';
+                        if (isCount) { tdClass = 'highlight-count' + (countVal > 100 ? ' high-value' : ''); }
+                        let editableAttr = '';
+                        if (editMode && col.editable) { editableAttr = ' contenteditable="true"'; }
+                        const dataFieldAttr = col.dataField ?  data-field="${col.dataField}" : '';
+                        tbody += <td class="${tdClass}"${editableAttr} data-col-index="${ci}"${dataFieldAttr}>${cellValue}</td>;
+                    });
+                    tbody += '</tr>';
+                });
+                tbody += '</tbody>';
+                container.innerHTML = <table>${colgroup}${thead}${tbody}</table>;
+
+                document.querySelectorAll('.filter-field').forEach(field => {
+                    field.addEventListener('input', onFilterFieldChange);
+                    field.addEventListener('change', onFilterFieldChange);
+                });
+
+                attachHandlers();
+                attachDragAndDrop();
+                updateEditModeUI();
+                buildAvailableFilterValues();
+
+                const filterBtn = document.getElementById('filterToggleBtn');
+                const hasActive = Object.keys(activeFilters).some(k => activeFilters[k] && activeFilters[k].trim() !== '');
+                filterBtn.classList.toggle('has-filters', hasActive);
+            }
+
+            function onFilterFieldChange(e) {
+                const field = e.target;
+                const colKey = field.dataset.filterColumn;
+                const value = field.value || '';
+                if (value.trim() === '') {
+                    delete activeFilters[colKey];
+                } else {
+                    activeFilters[colKey] = value;
+                }
+                saveUiState();
+                renderFullTable();
+            }
+
+            function toggleFilterRow() {
+                if (filterRowVisible) {
+                    activeFilters = {};
+                }
+                filterRowVisible = !filterRowVisible;
+                renderFullTable();
+                saveUiState();
+                showToast(filterRowVisible ? '🔍 فیلتر ستونی فعال شد' : '🔍 فیلتر ستونی غیرفعال و پاک شد');
+            }
+
+            function getFilteredSortedItems() {
+                let items = [...currentMenuData];
+                const allCols = getAllColumnDefs();
+                if (searchQuery.trim()) {
+                    const q = searchQuery.trim().toLowerCase();
+                    items = items.filter(item => {
+                        return visibleColumns.some(colKey => {
+                            const col = allCols.find(c => c.key === colKey);
+                            if (!col || col.dateColumn || col.key === 'ردیف' || col.key === 'جمع کل') return false;
+                            const val = item[col.dataField];
+                            return val && val.toString().toLowerCase().includes(q);
+                        }) || (item['ردیف'] && item['ردیف'].toString().includes(q));
+                    });
+                }
+ادامه کد میفرستم  منتظر باش هیچی نگو 
+
+باشه، منتظرم. ادامه کد را بفرست، فعلاً هیچ تحلیلی انجام نمی‌دهم تا همه بخش‌ها را ارسال کنی.
+
+
+اینم هم ادامه کد 
+
+                const filterKeys = Object.keys(activeFilters).filter(k => activeFilters[k] && activeFilters[k].trim() !== '');
+                if (filterKeys.length > 0) {
+                    items = items.filter(item => {
+                        return filterKeys.every(colKey => {
+                            const filterVal = activeFilters[colKey].trim().toLowerCase();
+                            if (!filterVal) return true;
+                            let cellVal = '';
+                            if (colKey === 'جمع کل') {
+                                cellVal = String(currentCountsMap[item.serviceNameId] || 0);
+                            } else {
+                                const col = allCols.find(c => c.key === colKey);
+                                if (!col || col.key === 'actions') return true;
+                                if (col.dateColumn) {
+                                    if (col.dateType === 'date') cellVal = toPersianDateStr(currentProductionDate);
+                                    else if (col.dateType === 'flightDate') cellVal = toPersianDateStr(currentFlightDate);
+                                    else if (col.dateType === 'day') cellVal = getPersianWeekday(currentProductionDate);
+                                    else if (col.dateType === 'flightDay') cellVal = getPersianWeekday(currentFlightDate);
+                                    else cellVal = '';
+                                } else {
+                                    cellVal = String(item[col.dataField] || '').toLowerCase();
+                                }
+                            }
+                            return cellVal.includes(filterVal);
+                        });
+                    });
+                }
+                if (sortState.column && sortState.direction) {
+                    const colKey = sortState.column;
+                    const dir = sortState.direction === 'asc' ? 1 : -1;
+                    const col = allCols.find(c => c.key === colKey);
+                    items.sort((a, b) => {
+                        let va, vb;
+                        if (colKey === 'ردیف') { va = a['ردیف']; vb = b['ردیف']; return dir * (va - vb); }
+                        if (col && col.dateColumn) {
+                            const dateMap = {
+                                'روز تولید': () => getPersianWeekday(currentProductionDate),
+                                'تاریخ تولید': () => toPersianDateStr(currentProductionDate),
+                                'روز پروازی': () => getPersianWeekday(currentFlightDate),
+                                'تاریخ پروازی': () => toPersianDateStr(currentFlightDate)
+                            };
+                            va = dateMap[colKey]();
+                            vb = va;
+                            return dir * va.localeCompare(vb, 'fa');
+                        }
+                        if (colKey === 'جمع کل') { va = currentCountsMap[a.serviceNameId] || 0; vb = currentCountsMap[b.serviceNameId] || 0; return dir * (va - vb); }
+                        if (col && col.dataField) { va = (a[col.dataField] || '').toString(); vb = (b[col.dataField] || '').toString(); return dir * va.localeCompare(vb, 'fa'); }
+                        return 0;
+                    });
+                } else {
+                    items.sort((a, b) => a['ردیف'] - b['ردیف']);
+                }
+                return items;
+            }
+
+            function attachHandlers() {
+                attachSortHandlers();
+                attachResizeHandlers();
+                if (editMode) attachEditModeListeners();
+            }
+
+            function attachSortHandlers() {
+                document.querySelectorAll('th.sortable').forEach(th => {
+                    th.onclick = function(e) {
+                        if (e.target.closest('.resize-handle')) return;
+                        const col = this.dataset.column;
+                        if (!col) return;
+                        if (sortState.column === col) {
+                            if (sortState.direction === 'asc') sortState.direction = 'desc';
+                            else if (sortState.direction === 'desc') { sortState.column = null; sortState.direction = null; } else sortState.direction = 'asc';
+                        } else { sortState.column = col; sortState.direction = 'asc'; }
+                        saveUiState();
+                        renderFullTable();
+                    };
+                });
+            }
+
+            function attachResizeHandlers() {
+                document.querySelectorAll('.resize-handle').forEach(handle => {
+                    handle.onmousedown = onResizeMouseDown;
+                    handle.ondblclick = onResizeDoubleClick;
+                });
+            }
+
+            function onResizeMouseDown(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const handle = e.target.closest('.resize-handle');
+                if (!handle) return;
+                const idx = parseInt(handle.dataset.colIndex);
+                startResize(idx, e.clientX, handle);
+            }
+
+            function startResize(colIndex, clientX, handle) {
+                isResizing = true;
+                resizeColIndex = colIndex;
+                resizeStartX = clientX;
+                const defs = getVisibleColumnsDefs();
+                const col = defs[colIndex];
+                resizeStartWidth = columnWidths[col.key] || col.defaultWidth;
+                handle.classList.add('active');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+                document.addEventListener('mousemove', onResizeMouseMove);
+                document.addEventListener('mouseup', onResizeMouseUp);
+            }
+
+            function onResizeMouseMove(e) {
+                if (!isResizing) return;
+                const delta = resizeStartX - e.clientX;
+                let newWidth = resizeStartWidth + delta;
+                const defs = getVisibleColumnsDefs();
+                const col = defs[resizeColIndex];
+                newWidth = Math.max(col.minWidth || 5, Math.min(newWidth, 800));
+                columnWidths[col.key] = Math.round(newWidth);
+                const colEl = document.querySelector(colgroup col:nth-child(${resizeColIndex+1}));
+                if (colEl) colEl.style.width = Math.round(newWidth) + 'px';
+            }
+
+            function onResizeMouseUp() {
+                finishResize();
+                document.removeEventListener('mousemove', onResizeMouseMove);
+                document.removeEventListener('mouseup', onResizeMouseUp);
+            }
+
+            function finishResize() {
+                if (!isResizing) return;
+                isResizing = false;
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                const handle = document.querySelector(.resize-handle[data-col-index="${resizeColIndex}"]);
+                if (handle) handle.classList.remove('active');
+                saveUiState();
+                resizeColIndex = null;
+            }
+
+            function onResizeDoubleClick(e) {
+                const handle = e.target.closest('.resize-handle');
+                if (!handle) return;
+                const idx = parseInt(handle.dataset.colIndex);
+                autoFitColumn(idx);
+            }
+
+            function autoFitColumn(colIndex) {
+                const defs = getVisibleColumnsDefs();
+                const col = defs[colIndex];
+                const table = document.querySelector('table');
+                if (!table) return;
+                const cells = table.querySelectorAll(td[data-col-index="${colIndex}"]);
+                const measure = document.createElement('span');
+                measure.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;font-size:0.78rem;padding:7px 5px;';
+                document.body.appendChild(measure);
+                let max = 0;
+                const th = table.querySelector(th[data-col-index="${colIndex}"]);
+                if (th) { measure.textContent = th.textContent.replace(/[⇅▲▼]/g, '').trim(); max = Math.max(max, measure.offsetWidth); }
+                cells.forEach(cell => { measure.textContent = (cell.textContent || '').trim(); max = Math.max(max, measure.offsetWidth); });
+                document.body.removeChild(measure);
+                const newWidth = Math.max(col.minWidth || 5, Math.round(max + 28));
+                columnWidths[col.key] = newWidth;
+                const colEl = document.querySelector(colgroup col:nth-child(${colIndex+1}));
+                if (colEl) colEl.style.width = newWidth + 'px';
+                saveUiState();
+                showToast(📏 عرض ستون «${col.label}» خودکار تنظیم شد.);
+            }
+
+            function attachEditModeListeners() {
+                document.querySelectorAll('td[contenteditable="true"]').forEach(cell => {
+                    cell.oninput = onEditCellInput;
+                    cell.onblur = onEditCellBlur;
+                    cell.onkeydown = function(e) {
+                        if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+                        if (e.key === 'Escape') { this.blur(); renderFullTable(); }
+                    };
+                });
+            }
+
+            function onEditCellInput(e) { saveCellEdit(e.target); }
+            function onEditCellBlur(e) { saveCellEdit(e.target); renderFullTable(); }
+
+            function saveCellEdit(cell) {
+                const field = cell.dataset.field;
+                const sid = cell.closest('tr')?.dataset.serviceId;
+                if (!sid || !field) return;
+                const val = cell.textContent.trim();
+                const item = currentMenuData.find(m => m.serviceNameId === sid);
+                if (!item) return;
+                if (field === 'جمع کل') { 
+                    const num = parsePersianNumber(val); 
+                    if (!isNaN(num)) currentCountsMap[sid] = num; 
+                } else { 
+                    const englishVal = toEnglishDigits(val);
+                    if (item.hasOwnProperty(field)) item[field] = englishVal === '' ? null : englishVal; 
+                }
+                unsavedStats.editedRows.add(sid);
+                markUnsaved();
+                saveData();
+            }
+
+            window.deleteItem = function(sid) {
+                if (!sid) return;
+                if (confirm(toPersianDigits('آیا از حذف این آیتم اطمینان دارید؟'))) {
+                    currentMenuData = currentMenuData.filter(m => m.serviceNameId !== sid);
+                    delete currentCountsMap[sid];
+                    unsavedStats.deletedRows++;
+                    markUnsaved();
+                    saveData();
+                    renderFullTable();
+                    showToast('🗑️ آیتم حذف شد.');
+                }
+            };
+
+            window.closeAddModal = function() { document.getElementById('addModalOverlay').classList.remove('active'); };
+
+            window.submitNewItem = function() {
+                const fields = ['addField1', 'addField2', 'addField3', 'addField4', 'addField5', 'addField6', 'addField7', 'addField8', 'addField9'];
+                const vals = fields.map(id => {
+                    const val = document.getElementById(id).value.trim();
+                    return id === 'addField9' ? val : toEnglishDigits(val);
+                });
+                if (!vals[0]) { showToast('شرح سرویس الزامی است.', 'warning'); return; }
+                const newId = 'user_ms_' + Date.now();
+                const maxRow = currentMenuData.reduce((max, m) => Math.max(max, m['ردیف'] || 0), 0);
+                const newItem = { id: newId, serviceNameId: newId, ردیف: maxRow + 1, 'شرح سرویس منو': vals[0],
+                    'نوع پک غذا': vals[1] || null, 'کد محصول پک': vals[2] || null, 'نوع سرویس نفرات': vals[3] || null,
+                    'کد محصول رسپی': vals[4] || null, 'نوع سرویس رسپی': vals[5] || null, 'واحد تولیدی': vals[6] || null,
+                    'مخفف سرویس': vals[7] || null, 'جمع کل': null };
+                customColumns.forEach(cc => { newItem[cc.dataField] = null; });
+                currentMenuData.push(newItem);
+                const countVal = parsePersianNumber(vals[8]);
+                if (!isNaN(countVal)) currentCountsMap[newId] = countVal;
+                unsavedStats.addedRows++;
+                markUnsaved();
+                saveData();
+                closeAddModal();
+                renderFullTable();
+                showToast('✅ آیتم جدید افزوده شد.');
+                fields.forEach(f => document.getElementById(f).value = '');
+                document.getElementById('addField9').value = '0';
+            };
+
+            function populateColumnVisibilityDropdown() {
+                const container = document.getElementById('columnCheckboxContainer');
+                const allCols = getAllColumnDefs();
+                let html = '';
+                allCols.forEach(col => {
+                    if (col.key === 'actions') return;
+                    const checked = visibleColumns.includes(col.key) ? 'checked' : '';
+                    html += <label class="column-visibility-item"><input type="checkbox" data-col="${col.key}" ${checked} onchange="toggleColumnVisibility('${col.key}', this.checked)"> ${col.label}</label>;
+                });
+                container.innerHTML = html;
+            }
+
+            window.toggleColumnVisibility = function(colKey, visible) {
+                if (visible) {
+                    if (!visibleColumns.includes(colKey)) visibleColumns.push(colKey);
+                } else {
+                    visibleColumns = visibleColumns.filter(k => k !== colKey);
+                    if (visibleColumns.length === 0) { visibleColumns.push(colKey); showToast('حداقل یک ستون باید نمایش داده شود.', 'warning'); return; }
+                }
+                saveUiState();
+                renderFullTable();
+            };
+
+            function openCustomColumnModal() { document.getElementById('customColumnModalOverlay').classList.add('active'); document.getElementById('customColumnName').value = ''; document.getElementById('customColumnType').value = 'text'; }
+            window.closeCustomColumnModal = function() { document.getElementById('customColumnModalOverlay').classList.remove('active'); };
+            window.submitCustomColumn = function() {
+                const nameInput = document.getElementById('customColumnName');
+                const typeInput = document.getElementById('customColumnType');
+                const name = nameInput.value.trim();
+                const type = typeInput.value;
+                if (!name) { showToast('نام ستون الزامی است.', 'warning'); return; }
+                const key = 'cc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                const newCol = { key, label: name, type, dataField: key, defaultWidth: 150, minWidth: 50 };
+                customColumns.push(newCol);
+                currentMenuData.forEach(item => { item[key] = null; });
+                visibleColumns.push(key);
+                columnWidths[key] = 150;
+                markUnsaved();
+                saveData();
+                closeCustomColumnModal();
+                renderFullTable();
+                showToast('✅ ستون جدید با موفقیت ایجاد شد.');
+            };
+
+            function attachDragAndDrop() {
+                const table = document.querySelector('#tableContainer table');
+                if (!table) return;
+                table.querySelectorAll('th[draggable="true"]').forEach(th => {
+                    th.addEventListener('dragstart', handleDragStart);
+                    th.addEventListener('dragend', handleDragEnd);
+                });
+                table.addEventListener('dragover', handleDragOver);
+                table.addEventListener('drop', handleDrop);
+            }
+
+            function handleDragStart(e) {
+                draggedColumnKey = e.target.dataset.column;
+                if (!draggedColumnKey) return;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', draggedColumnKey);
+                e.target.classList.add('dragging');
+            }
+            function handleDragOver(e) {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                const targetTh = e.target.closest('th');
+                if (!targetTh || !targetTh.dataset.column || targetTh.dataset.column === draggedColumnKey) return;
+                targetTh.classList.add('drag-over');
+            }
+            function handleDrop(e) {
+                e.preventDefault();
+                const targetTh = e.target.closest('th');
+                if (!targetTh) return;
+                const targetKey = targetTh.dataset.column;
+                if (!targetKey || targetKey === draggedColumnKey) return;
+                const fromIndex = visibleColumns.indexOf(draggedColumnKey);
+                const toIndex = visibleColumns.indexOf(targetKey);
+                if (fromIndex !== -1 && toIndex !== -1) {
+                    visibleColumns.splice(toIndex, 0, visibleColumns.splice(fromIndex, 1)[0]);
+                    saveUiState();
+                    renderFullTable();
+                    showToast('🔄 جابجایی ستون با موفقیت انجام شد.');
+                }
+                draggedColumnKey = null;
+                clearDragOverClasses();
+            }
+            function handleDragEnd(e) {
+                e.target.classList.remove('dragging');
+                clearDragOverClasses();
+                draggedColumnKey = null;
+            }
+            function clearDragOverClasses() {
+                document.querySelectorAll('th.drag-over').forEach(el => el.classList.remove('drag-over'));
+            }
+
+            async function exportToPDF() {
+                showLoading('📄 در حال تولید PDF...');
+                try {
+                    if (typeof html2canvas === 'undefined') { showToast('❌ کتابخانه html2canvas بارگذاری نشده است.', 'error'); hideLoading(); return; }
+                    const printHeader = document.getElementById('printHeader');
+                    const originalDisplay = printHeader.style.display;
+                    printHeader.style.display = 'block';
+                    document.body.classList.add('pdf-capture-mode');
+                    const appContainer = document.querySelector('.app-container');
+                    const canvas = await html2canvas(appContainer, { scale: 2, useCORS: true, logging: false, windowWidth: appContainer.scrollWidth, windowHeight: appContainer.scrollHeight });
+                    printHeader.style.display = originalDisplay;
+                    document.body.classList.remove('pdf-capture-mode');
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3' });
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    const margin = 12;
+                    const imgWidth = pageWidth - margin * 2;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    let heightLeft = imgHeight;
+                    let position = margin;
+                    doc.addImage(canvas, 'PNG', margin, position, imgWidth, imgHeight);
+                    heightLeft -= (pageHeight - margin * 2);
+                    while (heightLeft > 0) {
+                        position = margin - (imgHeight - heightLeft);
+                        doc.addPage();
+                        doc.addImage(canvas, 'PNG', margin, position, imgWidth, imgHeight);
+                        heightLeft -= (pageHeight - margin * 2);
+                    }
+                    const prodDate = toPersianDateStr(currentProductionDate);
+                    doc.save(گزارش_منوی_پروازی_${prodDate.replace(/\//g,'-')}.pdf);
+                    hideLoading();
+                    showToast('📄 PDF با موفقیت ذخیره شد.');
+                } catch (e) {
+                    document.body.classList.remove('pdf-capture-mode');
+                    hideLoading();
+                    showToast('❌ خطا در تولید PDF', 'error');
+                }
+            }
+
+            function exportToExcel() {
+                try {
+                    showLoading('📊 در حال تولید Excel...');
+                    const visibleDefs = getVisibleColumnsDefs().filter(c => !c.actionColumn);
+                    const headers = visibleDefs.map(c => c.label);
+                    const items = getFilteredSortedItems();
+                    const prodDay = getPersianWeekday(currentProductionDate);
+                    const prodDate = toPersianDateStr(currentProductionDate);
+                    const flightDay = getPersianWeekday(currentFlightDate);
+                    const flightDate = toPersianDateStr(currentFlightDate);
+                    const colCount = visibleDefs.length;
+                    const rowCount = items.length;
+                    const rows = new Array(rowCount + 1);
+                    rows[0] = headers;
+                    for (let r = 0; r < rowCount; r++) {
+                        const item = items[r];
+                        const row = new Array(colCount);
+                        const sid = item.serviceNameId;
+                        const countVal = currentCountsMap[sid] || 0;
+                        for (let c = 0; c < colCount; c++) {
+                            const col = visibleDefs[c];
+                            switch (col.key) {
+                                case 'ردیف': row[c] = item['ردیف']; break;
+                                case 'روز تولید': row[c] = prodDay; break;
+                                case 'تاریخ تولید': row[c] = prodDate; break;
+                                case 'روز پروازی': row[c] = flightDay; break;
+                                case 'تاریخ پروازی': row[c] = flightDate; break;
+                                case 'جمع کل': row[c] = countVal; break;
+                                default: row[c] = item[col.dataField] || '';
+                            }
+                        }
+                        rows[r + 1] = row;
+                    }
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, 'گزارش');
+                    XLSX.writeFile(wb, گزارش_منوی_پروازی_${prodDate.replace(/\//g,'-')}.xlsx);
+                    hideLoading();
+                    showToast('📊 فایل Excel ذخیره شد.');
+                } catch (e) {
+                    hideLoading();
+                    showToast('❌ خطا در Excel', 'error');
+                }
+            }
+
+            function printReport() { window.print(); }
+
+            function getArchives() { return loadFromLS('archives', []); }
+            function saveArchives(archives) { saveToLS('archives', archives); }
+
+            function saveArchive() {
+                const archives = getArchives();
+                const now = new Date();
+                const dateStr = toPersianDigits(now.toISOString().slice(0, 10).replace(/-/g, '_'));
+                const timeStr = toPersianDigits(now.toTimeString().slice(0, 8).replace(/:/g, ''));
+                const defaultName = Archive_${dateStr}_${timeStr};
+                const name = prompt(toPersianDigits('نام بایگانی را وارد کنید:'), defaultName);
+                if (!name) return;
+                const archiveData = {
+                    archiveName: name,
+                    createdAt: now.toISOString(),
+                    data: {
+                        menuData: currentMenuData,
+                        countsMap: currentCountsMap,
+                        visibleColumns, columnWidths, sortState, searchQuery, editMode,
+                        prodDate: toPersianDateStr(currentProductionDate), activeFilters, customColumns, filterRowVisible
+                    }
+                };
+                archives.push(archiveData);
+                saveArchives(archives);
+                showToast('📦 بایگانی ذخیره شد.');
+            }
+
+            function openArchiveModal() { document.getElementById('archiveModalOverlay').classList.add('active'); renderArchiveList(); }
+            window.closeArchiveModal = function() { document.getElementById('archiveModalOverlay').classList.remove('active'); };
+
+            function renderArchiveList(filter = '') {
+                const container = document.getElementById('archiveList');
+                const archives = getArchives();
+                let filtered = archives;
+                if (filter) { const q = filter.toLowerCase(); filtered = archives.filter(a => a.archiveName.toLowerCase().includes(q) || (a.createdAt && a.createdAt.includes(q))); }
+                if (filtered.length === 0) { container.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--text-muted);">بایگانی‌ای یافت نشد.</div>'; return; }
+                let html = '';
+                filtered.forEach((arch, idx) => {
+                    const createdAt = arch.createdAt ? new Date(arch.createdAt).toLocaleString('fa-IR') : 'نامشخص';
+                    const recordCount = arch.data.menuData ? arch.data.menuData.length : 0;
+                    html += <div style="padding: 10px; border-bottom: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="loadArchive(${idx})">
+                        <div><strong>${arch.archiveName}</strong><div style="font-size: 0.75rem; color: var(--text-muted);">${createdAt} | ${toPersianDigits(recordCount.toLocaleString('en-US'))} رکورد</div></div><span style="font-size: 1.2rem;">📂</span></div>;
+                });
+                container.innerHTML = html;
+            }
+
+            window.loadArchive = function(idx) {
+                const archives = getArchives();
+                if (!archives[idx]) return;
+                if (!confirm(toPersianDigits(آیا از بارگذاری بایگانی «${archives[idx].archiveName}» اطمینان دارید؟ تمام داده‌های فعلی جایگزین می‌شوند.))) return;
+                const arch = archives[idx];
+                currentMenuData = arch.data.menuData;
+                currentCountsMap = arch.data.countsMap;
+                visibleColumns = arch.data.visibleColumns;
+                columnWidths = arch.data.columnWidths;
+                sortState = arch.data.sortState || { column: null, direction: null };
+                searchQuery = arch.data.searchQuery || '';
+                editMode = arch.data.editMode || false;
+                activeFilters = arch.data.activeFilters || {};
+                customColumns = arch.data.customColumns || [];
+                filterRowVisible = arch.data.filterRowVisible || false;
+                const prodDateStr = arch.data.prodDate;
+                if (prodDateStr) {
+                    const d = persianStrToDate(prodDateStr);
+                    if (d && !isNaN(d.getTime())) { currentProductionDate = d; currentFlightDate = new Date(d.getTime() + 86400000); }
+                }
+                // Update originals
+                originalMenuData = JSON.parse(JSON.stringify(currentMenuData));
+                originalCountsMap = { ...currentCountsMap };
+                clearUnsaved();
+                saveUiState();
+                closeArchiveModal();
+                updateHeader();
+                renderFullTable();
+                showToast('📂 بایگانی با موفقیت بارگذاری شد.');
+            };
+
+            document.getElementById('archiveSearchInput').addEventListener('input', function() { renderArchiveList(this.value); });
+
+            // Save Changes button
+            async function saveChanges() {
+                console.log('[SaveChanges] saveChanges triggered');
+                showLoading('💾 در حال ذخیره تغییرات روی سرور...');
+                try {
+                    await saveDataToServer();
+                    hideLoading();
+                    showToast('💾 تغییرات با موفقیت ذخیره شد.');
+                } catch (e) {
+                    hideLoading();
+                    showToast('❌ خطا در ذخیره تغییرات.', 'error');
+                }
+            }
+
+            function getModuleRegistry() {
+                const allModules = [
+                    { id: 'dashboard', name: 'داشبورد', icon: '🏠', url: 'dashboard.html', roles: ['admin','manager','supervisor','chef','staff','operator','viewer','user'], enabled: true },
+                    { id: 'flight-menu', name: 'منوی پروازی', icon: '✈️', url: 'flight-menu.html', roles: ['admin','manager','supervisor','chef','staff','operator','viewer','user'], enabled: true },
+                    { id: 'meal-planning', name: 'برنامه‌ریزی غذا', icon: '🍽️', url: 'meal-planning.html', roles: ['admin','manager','supervisor','chef'], enabled: false },
+                    { id: 'inventory', name: 'انبار و موجودی', icon: '📦', url: 'inventory.html', roles: ['admin','manager','supervisor'], enabled: false },
+                    { id: 'orders', name: 'مدیریت سفارشات', icon: '📋', url: 'orders.html', roles: ['admin','manager','supervisor','operator'], enabled: false },
+                    { id: 'reports', name: 'گزارشات', icon: '📊', url: 'reports.html', roles: ['admin','manager','supervisor','viewer'], enabled: false },
+                    { id: 'users', name: 'مدیریت کاربران', icon: '👥', url: 'users.html', roles: ['admin'], enabled: false },
+                    { id: 'settings', name: 'تنظیمات', icon: '⚙️', url: 'settings.html', roles: ['admin','manager'], enabled: false },
+                    { id: 'audit-log', name: 'گزارش رویدادها', icon: '📝', url: 'audit-log.html', roles: ['admin'], enabled: false }
+                ];
+                const userRole = currentUser.role || 'user';
+                const allowedModules = currentUser.allowedModules || currentUser.enabledModules || null;
+                return allModules.filter(mod => {
+                    if (allowedModules && Array.isArray(allowedModules)) return allowedModules.includes(mod.id) && mod.enabled;
+                    return mod.roles.includes(userRole) && mod.enabled;
+                });
+            }
+
+            function populateSidebarModules() {
+                const container = document.getElementById('sidebarModules');
+                if (!container) return;
+                const modules = getModuleRegistry();
+                const currentPage = window.location.pathname.split('/').pop() || 'flight-menu.html';
+                let html = '';
+                modules.forEach(mod => {
+                    const isActive = currentPage === mod.url || (mod.id === 'flight-menu' && currentPage === 'flight-menu.html');
+                    const activeClass = isActive ? ' active' : '';
+                    html += <a class="sidebar-module-item${activeClass}" href="${mod.url}" data-module-id="${mod.id}" title="${mod.name}"><span class="module-icon">${mod.icon}</span><span class="module-label">${mod.name}</span>${isActive ? '<span class="module-badge">فعال</span>' : ''}</a>;
+                });
+                html += <div style="margin-top: 12px; padding: 8px 14px; font-size: 0.65rem; color: var(--text-muted); text-align: center; border-top: 1px dashed var(--border);">🧩 ماژول‌های بیشتر در آینده</div>;
+                container.innerHTML = html;
+            }
+
+            function openSidebar() {
+                const sidebar = document.getElementById('moduleSidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                const toggleBtn = document.getElementById('sidebarToggleBtn');
+                if (sidebar) sidebar.classList.add('open');
+                if (overlay) overlay.classList.add('active');
+                if (toggleBtn) toggleBtn.style.opacity = '0';
+                populateSidebarModules();
+            }
+            function closeSidebar() {
+                const sidebar = document.getElementById('moduleSidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                const toggleBtn = document.getElementById('sidebarToggleBtn');
+                if (sidebar) sidebar.classList.remove('open');
+                if (overlay) overlay.classList.remove('active');
+                if (toggleBtn) toggleBtn.style.opacity = '1';
+            }
+            function toggleSidebar() {
+                const sidebar = document.getElementById('moduleSidebar');
+                if (sidebar && sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+            }
+
+            function setupDropdowns() {
+                const dropdowns = document.querySelectorAll('.dropdown-wrapper');
+                dropdowns.forEach(wrapper => {
+                    const toggle = wrapper.querySelector('.dropdown-toggle');
+                    const menu = wrapper.querySelector('.dropdown-menu');
+                    if (!toggle || !menu) return;
+                    toggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const isOpen = menu.classList.contains('open');
+                        document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
+                        document.querySelectorAll('.dropdown-wrapper.open').forEach(w => w.classList.remove('open'));
+                        if (!isOpen) {
+                            menu.classList.add('open');
+                            wrapper.classList.add('open');
+                            if (wrapper.id === 'dropdownColumnsWrapper') populateColumnVisibilityDropdown();
+                        }
+                    });
+                });
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.dropdown-wrapper')) {
+                        document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
+                        document.querySelectorAll('.dropdown-wrapper.open').forEach(w => w.classList.remove('open'));
+                    }
+                });
+            }
+
+            async function exitAndSave() {
+                const modal = document.getElementById('exitModalOverlay');
+                const summary = document.getElementById('exitSummary');
+                const edited = unsavedStats.editedRows.size;
+                const added = unsavedStats.addedRows;
+                const deleted = unsavedStats.deletedRows;
+                let msg = '';
+                if (!hasUnsavedChanges) {
+                    msg = 'هیچ تغییر ذخیره‌نشده‌ای وجود ندارد. می‌توانید خارج شوید.';
+                } else {
+                    msg = <p>شما تغییرات ذخیره‌نشده دارید:</p><ul>;
+                    if (edited > 0) msg += <li>${toPersianDigits(edited)} ردیف ویرایش شده</li>;
+                    if (added > 0) msg += <li>${toPersianDigits(added)} ردیف اضافه شده</li>;
+                    if (deleted > 0) msg += <li>${toPersianDigits(deleted)} ردیف حذف شده</li>;
+                    msg += </ul><p>آیا مایل به ذخیره تغییرات پیش از خروج هستید؟</p>;
+                }
+                summary.innerHTML = msg;
+                modal.classList.add('active');
+
+                document.getElementById('exitCancelBtn').onclick = () => modal.classList.remove('active');
+                document.getElementById('exitWithoutSaveBtn').onclick = () => { window.location.href = 'dashboard.html'; };
+                document.getElementById('exitSaveAndExitBtn').onclick = async () => {
+                    console.log('[ExitSave] Saving before exit...');
+                    showLoading('💾 در حال ذخیره‌سازی...');
+                    try {
+                        await saveDataToServer();
+                        clearUnsaved();
+                        hideLoading();
+                        window.location.href = 'dashboard.html';
+                    } catch (e) {
+                        hideLoading();
+                        showToast('❌ خطا در ذخیره‌سازی. خروج لغو شد.', 'error');
+                    }
+                };
+            }
+
+            async function init() {
+                showLoading('در حال بارگذاری اطلاعات منو...');
+                if (location.protocol === 'file:') { showToast('برای اجرای برنامه از Web Server استفاده کنید.', 'warning'); hideLoading(); return; }
+                try {
+                    const userMenu = await loadUserMenuData();
+                    if (!userMenu) { hideLoading(); return; }
+                    menuDatabase = userMenu; // { menuItems, counts, customColumns }
+                } catch (e) { hideLoading(); return; }
+                await loadData(menuDatabase);
+                updateEditModeUI();
+                applySavedTheme();
+                buildAvailableFilterValues();
+                clearUnsaved();
+
+                document.getElementById('editModeToggle').onclick = function() { editMode = !editMode; saveUiState(); renderFullTable(); showToast(editMode ? '✏️ ویرایش فعال شد' : '🔒 ویرایش غیرفعال'); };
+                document.getElementById('searchInput').oninput = function() { searchQuery = this.value; saveUiState(); renderFullTable(); };
+                document.getElementById('loadSampleBtn').onclick = function() {
+                    const sample = { "ms1": 24, "ms2": 8, "ms4": 15, "ms5": 12, "ms6": 7, "ms26": 118, "ms27": 94, "ms28": 55, "ms32": 22, "ms33": 19, "ms44": 210, "ms53": 31, "ms55": 28, "ms57": 46, "ms59": 35, "ms60": 32, "ms69": 12, "ms70": 8, "ms71": 5, "ms86": 177, "ms87": 98, "ms95": 63, "ms96": 44 };
+                    currentCountsMap = { ...currentCountsMap, ...sample };
+                    markUnsaved();
+                    saveData();
+                    renderFullTable();
+                };
+                document.getElementById('loadLogBtn').onclick = () => document.getElementById('logFileInput').click();
+                document.getElementById('logFileInput').onchange = (e) => {
+                    if (e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            try {
+                                const json = JSON.parse(ev.target.result);
+                                const counts = json.counts || json;
+                                for (let k in counts) { if (k.startsWith('ms')) currentCountsMap[k] = Number(counts[k]); }
+                                markUnsaved();
+                                saveData();
+                                renderFullTable();
+                                showToast('✅ لاگ اعمال شد.');
+                            } catch (ex) { showToast('❌ فایل نامعتبر', 'error'); }
+                        };
+                        reader.readAsText(e.target.files[0]);
+                    }
+                };
+                document.getElementById('resetTableBtn').onclick = () => { currentCountsMap = {}; markUnsaved(); saveData(); renderFullTable(); showToast('🔄 جمع‌کل‌ها صفر شد.'); };
+                document.getElementById('addItemBtn').onclick = () => document.getElementById('addModalOverlay').classList.add('active');
+                document.getElementById('addColumnBtn').onclick = openCustomColumnModal;
+                document.getElementById('resetDataBtn').onclick = resetToOriginalData;
+                document.getElementById('exportExcelBtn').onclick = exportToExcel;
+                document.getElementById('exportPDFBtn').onclick = exportToPDF;
+                document.getElementById('printBtn').onclick = printReport;
+                document.getElementById('downloadSampleLogLink').onclick = function() {
+                    const sample = {}; for (let i = 1; i <= 101; i++) sample[ms${i}] = Math.floor(Math.random() * 20);
+                    const blob = new Blob([JSON.stringify({ counts: sample })], { type: 'application/json' });
+                    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'sample_log.json'; a.click();
+                };
+                document.getElementById('saveArchiveBtn').onclick = saveArchive;
+                document.getElementById('loadArchiveBtn').onclick = openArchiveModal;
+                document.getElementById('saveChangesBtn').onclick = saveChanges;
+                document.getElementById('filterToggleBtn').onclick = toggleFilterRow;
+                document.getElementById('sidebarToggleBtn').onclick = toggleSidebar;
+                document.getElementById('sidebarCloseBtn').onclick = closeSidebar;
+                document.getElementById('sidebarOverlay').onclick = closeSidebar;
+                document.getElementById('exitSaveBtn').onclick = exitAndSave;
+
+                document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { const sidebar = document.getElementById('moduleSidebar'); if (sidebar && sidebar.classList.contains('open')) closeSidebar(); } });
+                setupDropdowns();
+
+                const dpInput = document.getElementById('productionDateInput');
+                dpInput.value = toPersianDateStr(currentProductionDate);
+                try { $(dpInput).persianDatepicker({ format: 'YYYY/MM/DD', onSelect: function() { handleDateChange(dpInput.value); } }); } catch (e) { dpInput.removeAttribute('readonly'); }
+                dpInput.onchange = () => handleDateChange(dpInput.value);
+                dpInput.onblur = () => { if (!dpInput.value) { const now = new Date(); dpInput.value = toPersianDateStr(now); handleDateChange(dpInput.value); } };
+                function handleDateChange(str) {
+                    const d = persianStrToDate(str);
+                    if (d && !isNaN(d.getTime())) { currentProductionDate = d; currentFlightDate = new Date(d.getTime() + 86400000); updateHeader(); saveUiState(); renderFullTable(); }
+                }
+
+                updateHeader();
+                renderFullTable();
+                setStatus('✅ آماده');
+                hideLoading();
+                populateSidebarModules();
+                document.getElementById('sidebarToggleBtn').style.opacity = '1';
+                document.getElementById('sidebarCompanyName').textContent = currentUser.companyName || '---';
+                document.getElementById('sidebarUsername').textContent = currentUser.fullName || currentUsername;
+                document.getElementById('sidebarRole').textContent = getRoleDisplayName(currentUser.role);
+                console.log('[FlightMenu] Initialization complete.');
+            }
+
+            function updateHeader() {
+                const prodDay = getPersianWeekday(currentProductionDate);
+                const prodDate = toPersianDateStr(currentProductionDate);
+                const flightDay = getPersianWeekday(currentFlightDate);
+                const flightDate = toPersianDateStr(currentFlightDate);
+                document.getElementById('dynamicTitle').innerHTML = 📅 گزارش کل منوی پروازی مورخ ${toPersianDigits(flightDate)} (${flightDay}) | تولید: ${toPersianDigits(prodDate)} ${prodDay};
+                document.getElementById('printProdDate').textContent = toPersianDigits(prodDate);
+                document.getElementById('printProdDay').textContent = prodDay;
+                document.getElementById('printFlightDate').textContent = toPersianDigits(flightDate);
+                document.getElementById('printFlightDay').textContent = flightDay;
+            }
+
+            function updateEditModeUI() {
+                const btn = document.getElementById('editModeToggle');
+                btn.textContent = editMode ? '✏️ ویرایش فعال' : '✏️ حالت ویرایش';
+                btn.classList.toggle('active', editMode);
+                document.body.classList.toggle('edit-mode-active', editMode);
+            }
+
+            function showLoading(msg) { document.getElementById('loadingText').textContent = toPersianDigits(msg); document.getElementById('loadingOverlay').classList.add('show'); }
+            function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+            const themeToggle = document.getElementById('themeToggleCheckbox');
+            function applySavedTheme() {
+                const saved = localStorage.getItem('appTheme');
+                if (saved === 'dark') { document.body.classList.remove('theme-light'); document.body.classList.add('theme-dark'); themeToggle.checked = false; }
+                else { document.body.classList.remove('theme-dark'); document.body.classList.add('theme-light'); themeToggle.checked = true; }
+            }
+            themeToggle.addEventListener('change', () => {
+                if (themeToggle.checked) { document.body.classList.remove('theme-dark'); document.body.classList.add('theme-light'); localStorage.setItem('appTheme', 'light'); }
+                else { document.body.classList.remove('theme-light'); document.body.classList.add('theme-dark'); localStorage.setItem('appTheme', 'dark'); }
+            });
+
+            // Remaining session logic unchanged, preserved for full file.
+            // ... (session and idle management)
+            let sessionCheckIntervalId, heartbeatIntervalId, idleTimer, idleWarningTimer;
+            let lastActivityTime = Date.now();
+            let idleTimeoutDuration = 15 * 60 * 1000;
+            let idleWarningShown = false;
+
+            async function validateSession() {
+                if (!currentUser || !currentUser.sessionId) return;
+                try {
+                    const res = await fetch(${API_BASE}/sessions/validate?sessionId=${currentUser.sessionId}&token=${encodeURIComponent(currentUser.token || '')});
+                    if (!res.ok) { handleInvalidSession('نشست نامعتبر'); return; }
+                    const data = await res.json();
+                    if (data.valid === false || data.status === 'invalid') handleInvalidSession(data.reason || 'نشست منقضی شده است.');
+                    else if (data.forceLogout) handleForceLogout('نشست شما توسط مدیر سیستم پایان یافته است.');
+                    else if (data.multiLoginDetected) handleMultiLogin();
+                    else if (data.accountDisabled) handleInvalidSession('حساب کاربری شما غیرفعال شده است.');
+                    else if (data.terminatedByAdmin) handleForceLogout('نشست شما توسط مدیر سیستم پایان یافته است.');
+                } catch (e) { console.warn('Session validation error', e); }
+            }
+            function handleInvalidSession(reason) { showSessionModal('نشست نامعتبر', reason, () => { performLogout(); }); stopAllMonitors(); }
+            function handleForceLogout(message) { showSessionModal('خاتمه نشست', message, () => { performLogout(); }); stopAllMonitors(); }
+            function handleMultiLogin() { showSessionModal('ورود همزمان', 'ورود دیگری برای این حساب شناسایی شد. نشست فعلی بسته خواهد شد.', () => { performLogout(); }); stopAllMonitors(); }
+            function performLogout() { fetch(${API_BASE}/logout, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: currentUser.sessionId, username: currentUser.username }) }).catch(() => {}); localStorage.removeItem('currentUser'); window.location.href = 'login.html'; }
+            function showSessionModal(title, body, onConfirm) {
+                const overlay = document.createElement('div'); overlay.className = 'modal-overlay active';
+                overlay.innerHTML = <div class="modal" style="text-align:center;"><h3>${title}</h3><p style="margin:16px 0;">${body}</p><div class="actions" style="justify-content:center;"><button class="btn-primary" id="sessionModalConfirm">تأیید</button></div></div>;
+                document.body.appendChild(overlay);
+                document.getElementById('sessionModalConfirm').onclick = () => { overlay.remove(); if (onConfirm) onConfirm(); };
+            }
+            function stopAllMonitors() { clearInterval(sessionCheckIntervalId); clearInterval(heartbeatIntervalId); clearTimeout(idleTimer); clearTimeout(idleWarningTimer); }
+            async function sendHeartbeat() {
+                if (!currentUser) return;
+                try { await fetch(${API_BASE}/heartbeat, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: currentUser.username, userId: currentUser.id || '', companyId: currentUser.companyId || '', companyName: currentUser.companyName || '', sessionId: currentUser.sessionId, currentPage: window.location.pathname, lastActivity: new Date(lastActivityTime).toISOString(), onlineStatus: 'online' }) }); } catch (e) {}
+            }
+            function trackActivity() { lastActivityTime = Date.now(); if (idleWarningShown) dismissIdleWarning(); resetIdleTimer(); }
+            function resetIdleTimer() { clearTimeout(idleTimer); clearTimeout(idleWarningTimer); idleWarningShown = false; idleWarningTimer = setTimeout(() => { showIdleWarning(); }, idleTimeoutDuration - 30000); idleTimer = setTimeout(() => { performLogout(); }, idleTimeoutDuration); }
+            function showIdleWarning() {
+                idleWarningShown = true;
+                showSessionModal('هشدار عدم فعالیت', 'شما برای مدت طولانی غیرفعال بوده‌اید. در صورت عدم فعالیت، به‌طور خودکار خارج خواهید شد.<br><span id="idleCountdown" style="font-size:1.5rem;font-weight:bold;">۳۰</span> ثانیه', null);
+                let count = 30; const countdownEl = document.getElementById('idleCountdown');
+                window.idleCountdownInterval = setInterval(() => { count--; if (countdownEl) countdownEl.textContent = toPersianDigits(count); if (count <= 0) { clearInterval(window.idleCountdownInterval); performLogout(); } }, 1000);
+                document.addEventListener('mousemove', dismissIdleWarning); document.addEventListener('keydown', dismissIdleWarning); document.addEventListener('click', dismissIdleWarning); document.addEventListener('touchstart', dismissIdleWarning);
+            }
+            function dismissIdleWarning() {
+                if (idleWarningShown) { clearInterval(window.idleCountdownInterval); idleWarningShown = false; const overlay = document.querySelector('.modal-overlay.active'); if (overlay) overlay.remove(); document.removeEventListener('mousemove', dismissIdleWarning); document.removeEventListener('keydown', dismissIdleWarning); document.removeEventListener('click', dismissIdleWarning); document.removeEventListener('touchstart', dismissIdleWarning); trackActivity(); }
+            }
+            async function loadConfig() { try { const res = await fetch(${API_BASE}/config); if (res.ok) { const config = await res.json(); if (config.idleTimeoutMinutes && !isNaN(config.idleTimeoutMinutes)) { idleTimeoutDuration = config.idleTimeoutMinutes * 60 * 1000; resetIdleTimer(); } } } catch (e) {} }
+            function setupActivityListeners() { ['mousemove','keydown','click','touchstart'].forEach(ev => { document.addEventListener(ev, trackActivity, { passive: true }); }); }
+            function startMonitors() { validateSession(); sendHeartbeat(); resetIdleTimer(); sessionCheckIntervalId = setInterval(validateSession, 15000); heartbeatIntervalId = setInterval(sendHeartbeat, 30000); }
+            setupActivityListeners(); loadConfig().then(() => { startMonitors(); });
+
+            window.addEventListener('beforeunload', function(e) { if (hasUnsavedChanges) { e.preventDefault(); e.returnValue = 'شما تغییرات ذخیره نشده دارید. آیا مایل به خروج بدون ذخیره‌سازی هستید؟'; return e.returnValue; } });
+            window.sessionIntegration = { onConcurrentLoginDetected: function(existingSessionInfo) { console.warn('[SessionIntegration] Concurrent login detected:', existingSessionInfo); }, onSessionExpiryWarning: function(remainingSeconds) { console.warn('[SessionIntegration] Session expiring in', remainingSeconds, 'seconds'); }, onForceLogout: function(reason) { console.warn('[SessionIntegration] Force logout:', reason); }, onActivityTracked: function(activityData) {}, moduleRegistry: getModuleRegistry, refreshModules: function() { populateSidebarModules(); } };
+            window.filterIntegration = { getActiveFilters: function() { return { ...activeFilters }; }, setActiveFilters: function(filters) { activeFilters = { ...filters }; saveUiState(); renderFullTable(); }, clearAllFilters: function() { activeFilters = {}; saveUiState(); renderFullTable(); }, getAvailableFilterValues: function() { return { ...availableFilterValues }; } };
+            window.sidebarIntegration = { open: openSidebar, close: closeSidebar, toggle: toggleSidebar, refresh: populateSidebarModules, addCustomModule: function(moduleDef) { console.log('[SidebarIntegration] Custom module registration ready:', moduleDef.id); } };
+            console.log('[FlightMenu] Session management integration points ready.');
+            console.log('[FlightMenu] Filter integration API ready.');
+            console.log('[FlightMenu] Sidebar module navigation ready.');
+
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+        })();
+    </script>
+</body>
+</html>
+
+کد کامل ارسال شده به صورت تیکه ای 
+کد flight-menu.html    کامل کد رو برسی کن ببین مشکل چیه !
+
+کدی که فرستادی از نظر سینتکس در این تکه‌ای که ارسال شده خطای واضحی ندارد، اما چند نقطه خطرناک و چند باگ منطقی می‌بینم که به احتمال زیاد باعث مشکل در flight-menu.html شده‌اند.
+
+نکته مهم: چون کد را تکه‌تکه فرستادی، من بخش‌های مربوط به این توابع را ندیده‌ام:
+
+loadData()
+
+saveData()
+
+saveDataToServer()
+
+renderFullTable()
+
+getVisibleColumnsDefs()
+
+getAllColumnDefs()
+
+loadUserMenuData()
+
+buildAvailableFilterValues()
+
+و معمولاً مشکل اصلی در همین قسمت‌هاست.
+
+1. باگ بسیار مهم در Sort تاریخ
+اینجا:
+
+if (col && col.dateColumn) {
+    const dateMap = {
+        'روز تولید': () => getPersianWeekday(currentProductionDate),
+        'تاریخ تولید': () => toPersianDateStr(currentProductionDate),
+        'روز پروازی': () => getPersianWeekday(currentFlightDate),
+        'تاریخ پروازی': () => toPersianDateStr(currentFlightDate)
+    };
+
+    va = dateMap[colKey]();
+    vb = va;
+
+    return dir * va.localeCompare(vb, 'fa');
+}
+اینجا:
+
+vb = va;
+اشتباه است.
+
+در نتیجه:
+
+va.localeCompare(vb)
+همیشه صفر می‌شود.
+
+یعنی Sort ستون‌های تاریخ و روز اصلاً کار نمی‌کند.
+
+باید چیزی شبیه این باشد:
+
+va = dateMap[colKey](a);
+vb = dateMap[colKey](b);
+یا اصلاً از داده‌های ردیف‌ها خوانده شود.
+
+2. احتمال کرش در Filter
+اینجا:
+
+const filterVal = activeFilters[colKey].trim().toLowerCase();
+اگر:
+
+activeFilters[colKey]
+مقدار null باشد:
+
+Cannot read properties of null (reading 'trim')
+می‌گیری.
+
+ایمن‌تر:
+
+const filterVal = String(activeFilters[colKey] || '')
+    .trim()
+    .toLowerCase();
+3. مشکل بزرگ در Drag & Drop
+در Drop:
+
+const fromIndex = visibleColumns.indexOf(draggedColumnKey);
+const toIndex = visibleColumns.indexOf(targetKey);
+
+visibleColumns.splice(
+    toIndex,
+    0,
+    visibleColumns.splice(fromIndex, 1)[0]
+);
+اگر ستون را از چپ به راست ببری:
+
+fromIndex < toIndex
+بعد از splice اول، اندیس‌ها جابه‌جا می‌شوند.
+
+نتیجه:
+
+ستون در جای اشتباه قرار می‌گیرد.
+
+باید اینطور باشد:
+
+const item = visibleColumns.splice(fromIndex,1)[0];
+
+const adjustedIndex =
+    fromIndex < toIndex
+        ? toIndex - 1
+        : toIndex;
+
+visibleColumns.splice(adjustedIndex,0,item);
+4. مشکل AutoFit
+اینجا:
+
+measure.textContent =
+th.textContent.replace(/[⇅▲▼]/g, '').trim();
+اگر در Header آیکون‌های دیگر داشته باشی:
+
+📅
+✈️
+🗑️
+عرض واقعی اشتباه محاسبه می‌شود.
+
+5. مشکل خطرناک در Edit
+اینجا:
+
+cell.oninput = onEditCellInput;
+و:
+
+function onEditCellInput(e) {
+    saveCellEdit(e.target);
+}
+یعنی با هر حرف تایپ:
+
+saveData();
+فراخوانی می‌شود.
+
+و در saveCellEdit:
+
+saveData();
+وجود دارد.
+
+پس اگر کاربر 10 کاراکتر تایپ کند:
+
+10 بار saveData
+اجرا می‌شود.
+
+اگر saveData به LocalStorage یا API وصل باشد:
+
+فاجعه از نظر Performance.
+
+باید فقط در blur ذخیره شود.
+
+مثلاً:
+
+cell.oninput = null;
+cell.onblur = onEditCellBlur;
+یا debounce.
+
+6. مشکل Reset Table
+اینجا:
+
+currentCountsMap = {};
+تمام مقادیر از بین می‌رود.
+
+اما:
+
+originalCountsMap
+دست نمی‌خورد.
+
+بعداً در مقایسه تغییرات ممکن است وضعیت ناهماهنگ شود.
+
+7. احتمال Memory Leak
+در:
+
+document.addEventListener(
+   'mousemove',
+   onResizeMouseMove
+);
+اگر خطایی وسط Resize رخ دهد:
+
+finishResize()
+اجرا نمی‌شود.
+
+Listenerها باقی می‌مانند.
+
+بهتر است:
+
+window.addEventListener
+و cleanup در finally.
+
+8. مشکل آرشیو
+در Save Archive:
+
+data: {
+    menuData: currentMenuData,
+    countsMap: currentCountsMap
+}
+تو داری Reference ذخیره می‌کنی.
+
+بهتر:
+
+menuData:
+JSON.parse(JSON.stringify(currentMenuData))
+
+countsMap:
+JSON.parse(JSON.stringify(currentCountsMap))
+9. مشکل خیلی مهم در PDF
+اینجا:
+
+const canvas = await html2canvas(
+    appContainer,
+    {
+        scale:2,
+        windowWidth: appContainer.scrollWidth,
+        windowHeight: appContainer.scrollHeight
+    }
+);
+اگر جدول بزرگ باشد:
+
+مثلاً:
+
+300 ردیف
+مرورگر کرش می‌کند.
+
+یا:
+
+Canvas size exceeds maximum
+می‌گیری.
+
+این بخش برای داده زیاد مقیاس‌پذیر نیست.
+
+10. محتمل‌ترین مشکل اصلی
+از روی کل کد، سه جا بیشترین احتمال خرابی دارند:
+
+شماره 1
+saveDataToServer()
+اگر Promise reject شود.
+
+شماره 2
+renderFullTable()
+اگر در آن HTML اشتباه تولید شود.
+
+شماره 3
+loadUserMenuData()
+اگر ساختار داده برگشتی با این کد هماهنگ نباشد.
+
+مثلاً:
+
+item.serviceNameId
+وجود نداشته باشد.
+
+در این صورت تقریباً کل جدول خراب می‌شود.
+
+برای اینکه دقیقاً بگویم مشکل چیست، باید یکی از این دو مورد را بفرستی:
+
+خطای Console مرورگر (F12 → Console)
+
+فایل کامل flight-menu.html (یا حداقل توابع renderFullTable و loadData و saveDataToServer)
+
+بدون دیدن آن قسمت‌ها فقط می‌توانم باگ‌های منطقی بالا را پیدا کنم، اما علت اصلی خرابی صفحه معمولاً در همان سه تابع است.
+
+
+به سقف Free برای گفتگوهای دارای پیوست رسیده‌اید.
+اکنون ارتقا دهید یا تا 14:10صبر کنید تا به استفاده از فایل‌ها ادامه دهید، یا همین حالا بدون فایل گفتگو کنید.
+
+گفتگوی جدید
+
+پیشنهاد رایگان درخواست دریافت کنید
+
